@@ -1,0 +1,91 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[CreateAssetMenu(menuName ="Vehicle/GearBox", fileName ="_GearBox", order = 0)]
+public class GearBox : ScriptableObject
+{
+    [Header("GearBox Parameter")]
+    [SerializeField] float finalratio;
+    [SerializeField] float reverceRatio;
+    [SerializeField] float[] ratios;
+
+    int currentGear = 0;
+    float clutch = 0;
+    DriveMode driveMode = DriveMode.DRIVE;
+    float currentRatio;
+    float gearBoxForce = 0;
+
+    float m_GearBoxRPM;
+
+    public float GetGearBoxTorque(float engineTorque, float clutch)
+    {
+        this.clutch = clutch;
+
+        switch (driveMode)
+        {
+            case DriveMode.NUTERAL:
+                currentRatio = 0;
+                break;
+            case DriveMode.DRIVE:
+                currentRatio = ratios[currentGear];
+                break;
+            case DriveMode.REVERCE:
+                currentRatio = reverceRatio;
+                break;
+        }
+
+        gearBoxForce = currentRatio * engineTorque * finalratio * (1 - clutch);
+        return gearBoxForce;
+    }
+
+    public bool PeekGearUp()
+    {
+        return (driveMode == DriveMode.DRIVE && currentGear < ratios.Length - 1)? true : false;
+    }
+    public bool PeekGearDown()
+    {
+        return (driveMode == DriveMode.DRIVE && currentGear > 0)? true : false;
+    }
+    public void GearUp()
+    {
+        if (PeekGearUp()) ++currentGear;
+    }
+    public void GearDown()
+    {
+        if (PeekGearDown()) --currentGear;
+    }
+
+    public void ChangeDriveMode(DriveMode driveMode)
+    {
+        if (driveMode == this.driveMode) return;
+        this.driveMode = driveMode;
+        currentGear = 0;
+    }
+    public float GetWheelRPM(float axilRPM)
+    {
+        switch (driveMode)
+        {
+            case DriveMode.NUTERAL:
+                currentRatio = 0;
+                break;
+            case DriveMode.DRIVE:
+                currentRatio = ratios[currentGear];
+                break;
+            case DriveMode.REVERCE:
+                currentRatio = reverceRatio;
+                break;
+        }
+
+        m_GearBoxRPM = axilRPM * finalratio * currentRatio;
+        m_GearBoxRPM = (Mathf.Lerp(m_GearBoxRPM, 0, clutch));
+        return m_GearBoxRPM;
+    }
+}
+
+public enum DriveMode
+{
+    NUTERAL,
+    DRIVE,
+    REVERCE
+}
