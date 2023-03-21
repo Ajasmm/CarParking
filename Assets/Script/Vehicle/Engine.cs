@@ -28,4 +28,5 @@ public class Engine : ScriptableObject
         engineTorque -= oppositionTorque.Evaluate(currentRPM) * (1 - clutch) * (1 - acceleration);
         return engineTorque;
     }
+    public float GetEngineRPM() { return currentRPM; }
 }

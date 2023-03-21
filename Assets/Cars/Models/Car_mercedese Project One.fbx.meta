@@ -102,6 +102,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Meter
+    second: {fileID: 2100000, guid: 66de651fc2af7e04096381af1efa4e17, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: NUMBERPLATE
     second: {fileID: 2100000, guid: 4b8f2fb6d6ad33d4f895c6bb494d9748, type: 2}
   - first:

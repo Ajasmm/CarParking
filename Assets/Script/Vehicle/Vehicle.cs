@@ -12,10 +12,14 @@ public class Vehicle : MonoBehaviour
     [SerializeField] Axle[] axles;
     [SerializeField] Transform steeringWheel;
     [SerializeField] float maxSteeringWheelAngle;
+    [SerializeField] VehicleMeter_Digital vehicleMeter;
 
     [Header("Vehicle parameters")]
     [SerializeField] float downForce;
     [SerializeField] float downForceSpeed;
+
+    [Header("Engine Sound")]
+    [SerializeField] EngineSound[] engineSounds;
 
     Rigidbody m_RigidBody;
     Transform m_Transform;
@@ -24,6 +28,7 @@ public class Vehicle : MonoBehaviour
     Vector3 downForceVector;
 
     float steering;
+    float prevSteering;
     float acceleration;
     float braking;
     float handbraking;
@@ -63,14 +68,19 @@ public class Vehicle : MonoBehaviour
             handbraking = (handbraking > 0) ? 0 : 1;
 
         if (steeringWheel) UpdateSteering(steering);
+
+        foreach(EngineSound engineSound in engineSounds) engineSound.UpdateSound(acceleration, engine.GetEngineRPM());
+        if(vehicleMeter) vehicleMeter.UpdateMeter(speed, engine.GetEngineRPM());
     }
 
     private void UpdateSteering(float steering)
     {
-        float steeringWheelAngle = steering * maxSteeringWheelAngle;
-        Vector3 localRotation = steeringWheel.localEulerAngles;
-        localRotation.y = steeringWheelAngle;
-        steeringWheel.localEulerAngles = localRotation;
+        float steeringWheelAngle = steering - prevSteering;
+        steeringWheelAngle *= maxSteeringWheelAngle;
+        prevSteering = steering;
+
+
+        steeringWheel.Rotate(Vector3.up, steeringWheelAngle, Space.Self);
     }
 
     private void FixedUpdate()

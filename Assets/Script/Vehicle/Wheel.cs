@@ -57,7 +57,8 @@ public class Wheel : MonoBehaviour
     {
         wheelCollider = GetComponent<WheelCollider>();
         wheelCollider.ConfigureVehicleSubsteps(3, 15, 20);
-        wheelCollider.sprungMass = wheelCollider.attachedRigidbody.mass / 4;
+        wheelCollider.ResetSprungMasses();
+        Debug.Log("Sprung mass : " + wheelCollider.sprungMass); 
     }
 
     // Update is called once per frame

@@ -69,7 +69,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  minRPM: 1200
-  maxRPM: 9000
-  idleRPM: 2000
-  accelerationRPM: 6600
+  minRPM: 900
+  maxRPM: 7000
+  idleRPM: 1000
+  accelerationRPM: 6000
