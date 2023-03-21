@@ -10,9 +10,10 @@ public class VehicleMeter_Digital : MonoBehaviour
 
     [SerializeField] TMP_Text speed_Text;
     [SerializeField] TMP_Text rpm_Text;
+    [SerializeField] TMP_Text gear_Text;
     
 
-    public void UpdateMeter(float speed, float rpm)
+    public void UpdateMeter(float speed, float rpm, string gear)
     {
         if(speed_Text)
         {
@@ -25,5 +26,7 @@ public class VehicleMeter_Digital : MonoBehaviour
             rpm_Text.text = ((int)rpm).ToString();
             rpm_Text.color = (rpm > redRPM) ? Color.red : Color.white;
         }
+
+        if (gear_Text) gear_Text.text = gear;
     }
 }

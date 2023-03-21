@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName ="Vehicle/GearBox", fileName ="_GearBox", order = 0)]
+[CreateAssetMenu(menuName = "Vehicle/GearBox", fileName = "_GearBox", order = 0)]
 public class GearBox : ScriptableObject
 {
     [Header("GearBox Parameter")]
@@ -41,11 +41,11 @@ public class GearBox : ScriptableObject
 
     public bool PeekGearUp()
     {
-        return (driveMode == DriveMode.DRIVE && currentGear < ratios.Length - 1)? true : false;
+        return (driveMode == DriveMode.DRIVE && currentGear < ratios.Length - 1) ? true : false;
     }
     public bool PeekGearDown()
     {
-        return (driveMode == DriveMode.DRIVE && currentGear > 0)? true : false;
+        return (driveMode == DriveMode.DRIVE && currentGear > 0) ? true : false;
     }
     public void GearUp()
     {
@@ -76,10 +76,26 @@ public class GearBox : ScriptableObject
                 currentRatio = reverceRatio;
                 break;
         }
-
-        m_GearBoxRPM = axilRPM * finalratio * currentRatio;
-        m_GearBoxRPM = (Mathf.Lerp(m_GearBoxRPM, 0, clutch));
+        float tempRPM;
+        tempRPM = axilRPM * finalratio * currentRatio;
+        tempRPM = (Mathf.Lerp(tempRPM, 0, clutch));
+        m_GearBoxRPM = Mathf.Lerp(m_GearBoxRPM, tempRPM, 0.5F);
         return m_GearBoxRPM;
+    }
+
+    public string GetCurrentGear()
+    {
+        switch (driveMode)
+        {
+            case DriveMode.NUTERAL:
+                return "N";
+            case DriveMode.REVERCE:
+                return "R";
+            case DriveMode.DRIVE:
+                return "D" + (currentGear + 1).ToString();
+            default:
+                return " ";
+        }
     }
 }
 

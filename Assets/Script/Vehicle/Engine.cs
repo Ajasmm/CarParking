@@ -20,7 +20,7 @@ public class Engine : ScriptableObject
         enigneRPM = Mathf.Lerp(idleRPM, accelerationRPM, acceleration);
         currentRPM = Mathf.Lerp(gearBoxRPM, enigneRPM, clutch);
 
-        currentRPM = (currentRPM < minRPM) ? minRPM : currentRPM;
+        currentRPM = Mathf.Lerp(currentRPM, (currentRPM < minRPM) ? minRPM : currentRPM, 0.5F);
 
         // Debug.Log($"Engine RPM : {currentRPM} gearboxRPM : {gearBoxRPM} acceleration : {acceleration} clutch : {clutch}");
 
@@ -28,5 +28,5 @@ public class Engine : ScriptableObject
         engineTorque -= oppositionTorque.Evaluate(currentRPM) * (1 - clutch) * (1 - acceleration);
         return engineTorque;
     }
-    public float GetEngineRPM() { return currentRPM; }
+    public float GetEngineRPM() { return (currentRPM < minRPM) ? minRPM : currentRPM; }
 }

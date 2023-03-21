@@ -39,20 +39,24 @@ public class EngineSound : MonoBehaviour
     {
         if (isDebuging)
         {
-            UpdateSound(d_Acceleration, d_rpm);
+            H_UpdateSound(d_Acceleration, d_rpm);
         }
     }
     public void UpdateSound(float acceleration, float rpm)
     {
+        if (isDebuging) return;
+        H_UpdateSound(acceleration, rpm);
+    }
+    private void H_UpdateSound(float acceleration, float rpm)
+    {
         audioSource.volume = CalculateVolume(acceleration, rpm);
         audioSource.pitch = CalculatePitch(rpm);
-        if(!audioSource.isPlaying) audioSource.Play();
+        if (!audioSource.isPlaying) audioSource.Play();
     }
     private float CalculatePitch(float rpm)
     {
         rpmInRange = rpm - minRPM;
         pitchValue = minPitch + ((rpmInRange / rpmRange) * pitchRange);
-        Debug.Log($"Rpm {rpm} pitch {pitchValue}");
         return pitchValue;
     }
 

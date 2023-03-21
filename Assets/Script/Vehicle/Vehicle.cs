@@ -70,7 +70,7 @@ public class Vehicle : MonoBehaviour
         if (steeringWheel) UpdateSteering(steering);
 
         foreach(EngineSound engineSound in engineSounds) engineSound.UpdateSound(acceleration, engine.GetEngineRPM());
-        if(vehicleMeter) vehicleMeter.UpdateMeter(speed, engine.GetEngineRPM());
+        if(vehicleMeter) vehicleMeter.UpdateMeter(speed, engine.GetEngineRPM(), gearBox.GetCurrentGear());
     }
 
     private void UpdateSteering(float steering)
