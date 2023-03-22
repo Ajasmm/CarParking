@@ -1,32 +1,35 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName ="_Engine", menuName ="Vehicle/Engine", order = 0)]
-public class Engine : ScriptableObject
+namespace Ajas.Vehicle
 {
-    [SerializeField] private AnimationCurve torqueCurve;
-    [SerializeField] private AnimationCurve oppositionTorque;
-    [SerializeField] private float minRPM;
-    [SerializeField] private float maxRPM;
-    [SerializeField] private float idleRPM;
-    [SerializeField] private float accelerationRPM;
-
-    float enigneRPM;
-    float currentRPM;
-    float engineTorque;
-
-    public float GetEngineTorque(float gearBoxRPM, float acceleration, float clutch)
+    [CreateAssetMenu(fileName = "_Engine", menuName = "Vehicle/Engine", order = 0)]
+    public class Engine : ScriptableObject
     {
-        enigneRPM = Mathf.Lerp(idleRPM, accelerationRPM, acceleration);
-        currentRPM = Mathf.Lerp(gearBoxRPM, enigneRPM, clutch);
+        [SerializeField] private AnimationCurve torqueCurve;
+        [SerializeField] private AnimationCurve oppositionTorque;
+        [SerializeField] private float minRPM;
+        [SerializeField] private float maxRPM;
+        [SerializeField] private float idleRPM;
+        [SerializeField] private float accelerationRPM;
 
-        currentRPM = Mathf.Lerp(currentRPM, (currentRPM < minRPM) ? minRPM : currentRPM, 0.5F);
+        float enigneRPM;
+        float currentRPM;
+        float engineTorque;
 
-        // Debug.Log($"Engine RPM : {currentRPM} gearboxRPM : {gearBoxRPM} acceleration : {acceleration} clutch : {clutch}");
+        public float GetEngineTorque(float gearBoxRPM, float acceleration, float clutch)
+        {
+            if(gearBoxRPM < minRPM) gearBoxRPM = minRPM;
 
-        engineTorque = torqueCurve.Evaluate(currentRPM) * acceleration;
-        engineTorque -= oppositionTorque.Evaluate(currentRPM) * (1 - clutch) * (1 - acceleration);
-        return engineTorque;
+            enigneRPM = Mathf.Lerp(idleRPM, accelerationRPM, acceleration);
+            currentRPM = Mathf.Lerp(gearBoxRPM, enigneRPM, clutch);
+
+            currentRPM = Mathf.Lerp(currentRPM, (currentRPM < minRPM) ? minRPM : currentRPM, 0.5F);
+
+            engineTorque = torqueCurve.Evaluate(currentRPM) * acceleration;
+            engineTorque -= oppositionTorque.Evaluate(currentRPM) * (1 - clutch) * (1 - acceleration);
+            return engineTorque;
+        }
+        public float GetEngineRPM() { return (currentRPM < minRPM) ? minRPM : currentRPM; }
     }
-    public float GetEngineRPM() { return (currentRPM < minRPM) ? minRPM : currentRPM; }
 }

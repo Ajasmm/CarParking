@@ -107,6 +107,21 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Mirror_Center
+    second: {fileID: 2100000, guid: f110971acc304224580a6d03105e7b95, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mirror_Left
+    second: {fileID: 2100000, guid: 6a1c7ababccfa194aafd7980cd13c306, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mirror_Right
+    second: {fileID: 2100000, guid: cbbe6095965f8804ca967a2efa0646e7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: NUMBERPLATE
     second: {fileID: 2100000, guid: 4b8f2fb6d6ad33d4f895c6bb494d9748, type: 2}
   - first:

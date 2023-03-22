@@ -2,44 +2,49 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Axle : MonoBehaviour
+namespace Ajas.Vehicle
 {
-    [Header("Axle Parameters")]
-    [SerializeField] bool isMotorConnected = true;
-
-    [Header("Wheels")]
-    [SerializeField] float maxSteerAngle = 30F;
-    [SerializeField] float brakeTorque = 500;
-    [SerializeField] float handBrakeTorque = 500F;
-    [SerializeField] Wheel[] wheels;
-
-    float m_BrakeTorque;
-    float m_HandBrakeTorque;
-    float m_FinalBrake;
-    float m_WheelRPM;
-    
-
-    public void UpdatePhysics(float steering, float motorTorque, float brakeTorque, float handBrakeTorque)
+    public class Axle : MonoBehaviour
     {
-        m_BrakeTorque = brakeTorque * this.brakeTorque;
-        m_HandBrakeTorque = handBrakeTorque * this.handBrakeTorque;
-        m_FinalBrake = (m_BrakeTorque > m_HandBrakeTorque) ? m_BrakeTorque : m_HandBrakeTorque;
-        if (m_FinalBrake < 1) m_FinalBrake = 0;
+        [Header("Axle Parameters")]
+        [SerializeField] bool isMotorConnected = true;
 
-        foreach (var wheel in wheels)
+        [Header("Wheels")]
+        [SerializeField] float maxSteerAngle = 30F;
+        [SerializeField] float brakeTorque = 500;
+        [SerializeField] float handBrakeTorque = 500F;
+        [SerializeField] Wheel[] wheels;
+
+        float m_BrakeTorque;
+        float m_HandBrakeTorque;
+        float m_FinalBrake;
+        float m_WheelRPM;
+
+
+        public void UpdatePhysics(float steering, float motorTorque, float brakeTorque, float handBrakeTorque)
         {
-            wheel.SteerAngle = steering * maxSteerAngle;
-            wheel.MotorTorque = (isMotorConnected) ? motorTorque : 0;
-            wheel.BrakeTorue = m_FinalBrake;
+            m_BrakeTorque = brakeTorque * this.brakeTorque;
+            m_HandBrakeTorque = handBrakeTorque * this.handBrakeTorque;
+            m_FinalBrake = (m_BrakeTorque > m_HandBrakeTorque) ? m_BrakeTorque : m_HandBrakeTorque;
+            if (m_FinalBrake < 1) m_FinalBrake = 0;
+
+            int motorConnectedWheels;
+
+            foreach (var wheel in wheels)
+            {
+                wheel.SteerAngle = steering * maxSteerAngle;
+                wheel.MotorTorque = (isMotorConnected)? motorTorque / wheels.Length : 0;
+                wheel.BrakeTorue = m_FinalBrake;
+            }
         }
-    }
 
-    public float GetWheelRPM()
-    {
-        m_WheelRPM = 0;
-        foreach (Wheel wheel in wheels) m_WheelRPM += wheel.GetWheelRPM();
+        public float GetWheelRPM()
+        {
+            m_WheelRPM = 0;
+            foreach (Wheel wheel in wheels) m_WheelRPM += wheel.GetWheelRPM();
 
-        return m_WheelRPM / wheels.Length;
+            return m_WheelRPM / wheels.Length;
+        }
+        public bool IsMotorConnecter { get { return isMotorConnected; } private set { } }
     }
-    public bool IsMotorConnecter { get { return isMotorConnected; } private set { } }
 }

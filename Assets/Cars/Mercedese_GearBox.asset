@@ -15,10 +15,27 @@ MonoBehaviour:
   finalratio: 3.64
   reverceRatio: -3.64
   ratios:
-  - 3.18
-  - 2.26
-  - 1.68
-  - 1.29
-  - 1.06
-  - 0.88
-  - 0.8
+  - ratio: 3.18
+    gearDownSpeed: 16.935806
+    gearUpSpeed: 38.105564
+  - ratio: 2.26
+    gearDownSpeed: 23.830032
+    gearUpSpeed: 53.61757
+  - ratio: 1.68
+    gearDownSpeed: 32.057064
+    gearUpSpeed: 72.1284
+  - ratio: 1.29
+    gearDownSpeed: 41.748737
+    gearUpSpeed: 93.934654
+  - ratio: 1.06
+    gearDownSpeed: 50.807426
+    gearUpSpeed: 114.31671
+  - ratio: 0.88
+    gearDownSpeed: 61.199852
+    gearUpSpeed: 137.69968
+  - ratio: 0.8
+    gearDownSpeed: 67.31984
+    gearUpSpeed: 151.46964
+  tyreRadius: 0.26
+  gearUpRPM: 4500
+  gearDownRPM: 2000
