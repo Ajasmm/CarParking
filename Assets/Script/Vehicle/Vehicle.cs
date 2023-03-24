@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Ajas.Vehicle
@@ -47,6 +49,11 @@ namespace Ajas.Vehicle
         float m_GearBoxTorque;
         float m_MotorTorque;
 
+        int rpm;
+        string currentGear;
+
+        CancellationTokenSource CancellationTokenSource;
+
         private void Awake()
         {
             m_RigidBody = GetComponent<Rigidbody>();
@@ -56,9 +63,17 @@ namespace Ajas.Vehicle
         }
         private void Update()
         {
+
+            rpm = (int) engine.GetEngineRPM();
+            currentGear = gearBox.GetCurrentGear();
+
             if (steeringWheel) UpdateSteering(steering);
             foreach (EngineSound engineSound in engineSounds) engineSound.UpdateSound(acceleration, engine.GetEngineRPM());
-            if (vehicleMeter) vehicleMeter.UpdateMeter(speed, engine.GetEngineRPM(), gearBox.GetCurrentGear());
+            if (vehicleMeter) vehicleMeter.UpdateMeter(speed, rpm, currentGear);
+        }
+        private void Start()
+        {
+            RegisterPlayer();
         }
 
         private void UpdateSteering(float steering)
@@ -110,5 +125,29 @@ namespace Ajas.Vehicle
             this.braking = pedalBrake;
             this.handbraking = handBrake;
         }
+
+        async void RegisterPlayer()
+        {
+            if(CancellationTokenSource == null) CancellationTokenSource = new CancellationTokenSource();
+            GameObject player = this.gameObject; 
+            await Task.Run(() =>
+            {
+                while (GameManager.Instance == null)
+                {
+                    Debug.Log("No gamemanager");
+                    if(CancellationTokenSource.IsCancellationRequested) break;
+                }
+                GameManager.Instance.player = player;
+            }, CancellationTokenSource.Token);
+        }
+
+        private void OnDestroy()
+        {
+            CancellationTokenSource?.Cancel();
+        }
+
+        public int GetSpeed() { return (int) speed; }
+        public int GetEngineRPM() { return rpm; }
+        public string GetCurrentGear() { return currentGear; }  
     }
 }
