@@ -43,7 +43,7 @@ ReflectionProbe:
   serializedVersion: 2
   m_Type: 0
   m_Mode: 1
-  m_RefreshMode: 1
+  m_RefreshMode: 0
   m_TimeSlicingMode: 0
   m_Resolution: 128
   m_UpdateFrequency: 0
@@ -387,7 +387,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8418217872006238727}
-  m_LocalRotation: {x: 0.06908948, y: -0.0000019073486, z: 0.00000012852252, w: 0.9976105}
+  m_LocalRotation: {x: 0.06908947, y: -0.0000019073486, z: 0.00000012852252, w: 0.9976105}
   m_LocalPosition: {x: 0.00001835823, y: 1.3700027, z: -5.0000067}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -783,7 +783,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMotorConnected: 1
   maxSteerAngle: 0
-  brakeTorque: 800
+  brakeTorque: 1000
   handBrakeTorque: 0
   wheels:
   - {fileID: 9124822797750620603}
@@ -1099,8 +1099,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isMotorConnected: 0
   maxSteerAngle: 30
-  brakeTorque: 2000
-  handBrakeTorque: 5000
+  brakeTorque: 2500
+  handBrakeTorque: 10000
   wheels:
   - {fileID: 8247271269918189456}
   - {fileID: 2797333239917208685}
@@ -2290,11 +2290,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_ForwardFriction.m_ExtremumSlip
@@ -2403,11 +2403,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_ForwardFriction.m_ExtremumSlip
@@ -2516,11 +2516,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 3d1c18503300be449b387526f3820079, type: 3}
       propertyPath: m_ForwardFriction.m_ExtremumSlip
@@ -4395,11 +4395,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_ForwardFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_SidewaysFriction.m_Stiffness
-      value: 12
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3256741577084767500, guid: 115732cb4136f2f419fcfe2c87f9d7fe, type: 3}
       propertyPath: m_ForwardFriction.m_ExtremumSlip
