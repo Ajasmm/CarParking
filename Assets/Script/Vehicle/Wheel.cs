@@ -62,8 +62,11 @@ namespace Ajas.Vehicle
             brakeRot.y = steerAngle;
 
             tyreMesh.SetPositionAndRotation(tyrePos, TyreRot);
-            BrakeMesh.position = tyrePos;
-            BrakeMesh.localEulerAngles = brakeRot;
+            if (BrakeMesh)
+            {
+                BrakeMesh.position = tyrePos;
+                BrakeMesh.localEulerAngles = brakeRot;
+            }
         }
 
         public float GetWheelRPM()

@@ -28,8 +28,6 @@ namespace Ajas.Vehicle
             m_FinalBrake = (m_BrakeTorque > m_HandBrakeTorque) ? m_BrakeTorque : m_HandBrakeTorque;
             if (m_FinalBrake < 1) m_FinalBrake = 0;
 
-            int motorConnectedWheels;
-
             foreach (var wheel in wheels)
             {
                 wheel.SteerAngle = steering * maxSteerAngle;

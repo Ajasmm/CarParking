@@ -52,7 +52,6 @@ namespace Ajas.Vehicle
         int rpm;
         string currentGear;
 
-        CancellationTokenSource CancellationTokenSource;
 
         private void Awake()
         {
@@ -126,24 +125,15 @@ namespace Ajas.Vehicle
             this.handbraking = handBrake;
         }
 
-        async void RegisterPlayer()
+        private void RegisterPlayer()
         {
-            if(CancellationTokenSource == null) CancellationTokenSource = new CancellationTokenSource();
             GameObject player = this.gameObject; 
-            await Task.Run(() =>
-            {
-                while (GameManager.Instance == null)
-                {
-                    Debug.Log("No gamemanager");
-                    if(CancellationTokenSource.IsCancellationRequested) break;
-                }
-                GameManager.Instance.player = player;
-            }, CancellationTokenSource.Token);
+            GameManager.Instance?.RegisterPlayer(player);
         }
 
         private void OnDestroy()
         {
-            CancellationTokenSource?.Cancel();
+            if (GameManager.Instance?.player == this.gameObject) GameManager.Instance?.RegisterPlayer(null);
         }
 
         public int GetSpeed() { return (int) speed; }
