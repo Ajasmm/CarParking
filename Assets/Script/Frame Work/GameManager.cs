@@ -1,61 +1,90 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+namespace Ajas.FrameWork
 {
-    public static GameManager Instance
+
+    public class GameManager : MonoBehaviour
     {
-        get
+        public static GameManager Instance
         {
-            if(isGameEnded) return null;
-            if(instatnce == null)
+            get
             {
-                GameObject gameManagerObj = new GameObject("GameManager");
-                gameManagerObj.AddComponent<GameManager>();
+                if (isGameEnded) return null;
+                if (instatnce == null)
+                {
+                    GameObject gameManagerObj = new GameObject("GameManager");
+                    gameManagerObj.AddComponent<GameManager>();
+                }
+                return instatnce;
             }
-            return instatnce;
+            private set { }
         }
-        private set { }
-    }
-    private static GameManager instatnce;
+        public GameObject player { private set; get; }
+        public MyInput input;
+        public int CurrentLevel = 1;
 
-    public GameObject player { private set; get; }
-    private static bool isGameEnded = false;
+        public GamePlayMode CurrentGamePlayMode { 
+            set { RegisterGameMode(value); } 
+            get { return currentGamePlayMode; } }
+        private GamePlayMode currentGamePlayMode;
 
-    private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        private static bool isGameEnded = false;
+        private static GameManager instatnce;
 
-    public void OnEnable()
-    {
-        if(instatnce == null)
+        private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
+        public void Awake()
         {
-            instatnce = this;
-            DontDestroyOnLoad(gameObject);
-        }else if(instatnce != this) Destroy(gameObject);
-    }
-
-    public void RegisterPlayer(GameObject player)
-    {
-        this.player = player;
-    }
-    public Task WaitForPlayer()
-    {
-        Task task = Task.Run(() =>
-        {
-            while(player == null)
+            if (instatnce == null)
             {
-                if (cancellationTokenSource.Token.IsCancellationRequested) return;
-                Debug.Log("Player is not registered!");
-            }
-        }, cancellationTokenSource.Token);
-        return task;
-    }
+                instatnce = this;
+                input = new MyInput();
+                input.Disable();
+                DontDestroyOnLoad(gameObject);
+            } else if (instatnce != this) Destroy(gameObject);
+        }
 
-    private void OnDestroy()
-    {
-        if(instatnce == this) isGameEnded = true;
-        cancellationTokenSource.Cancel();
+        public void RegisterPlayer(GameObject player)
+        {
+            this.player = player;
+        }
+        public Task WaitForPlayer()
+        {
+            Task task = Task.Run(() =>
+            {
+                while (player == null)
+                {
+                    if (cancellationTokenSource.Token.IsCancellationRequested) return;
+                    Debug.Log("Player is not registered!");
+                }
+            }, cancellationTokenSource.Token);
+            return task;
+        }
+
+        private void RegisterGameMode(GamePlayMode gameMode)
+        {
+            currentGamePlayMode?.OnStop();
+            gameMode.OnStart();
+            currentGamePlayMode = gameMode;
+        }
+
+        public void GameWon()
+        {
+            Debug.Log("You Won the Game :)");
+            currentGamePlayMode?.Won();
+        }
+        public void GameLost()
+        {
+            Debug.Log("You Lost the Game :(");
+            currentGamePlayMode?.Failed();
+        }
+
+        private void OnDestroy()
+        {
+            if (instatnce == this) isGameEnded = true;
+            cancellationTokenSource.Cancel();
+        }
     }
 }

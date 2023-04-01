@@ -4,14 +4,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Cinemachine;
+using Ajas.FrameWork;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Vehicle))]
 public class Driver_Player : MonoBehaviour
 {
+    [Header("Vehicle Parameter")]
+    [SerializeField] float steeringSencitivity = 1;
+
     [Header("Cameras")]
     [SerializeField] CinemachineVirtualCamera[] cameras;
+    
     int currentCamera = 0;
 
+    float rawSteeringInput, rawAccelrationInput;
     float wheelSteering, pedalAcceleration, pedalBrake, handBrake;
     float acceleration;
 
@@ -20,6 +27,7 @@ public class Driver_Player : MonoBehaviour
     Vehicle vehicle;
     bool isGearChanging = false;
 
+    MyInput input;
     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private void Awake()
@@ -32,24 +40,58 @@ public class Driver_Player : MonoBehaviour
         vehicle.gearBox.Initilize();
         foreach(CinemachineVirtualCamera vcam in cameras)  vcam.m_Priority = 0;
         cameras[currentCamera].m_Priority = 10;
+        handBrake = 1;
+    }
+
+    private void OnEnable()
+    {
+        input = GameManager.Instance.input;
+        input.Enable();
+
+        input.GamePlay.Camera.performed += SwitchCamera;
+
+        input.GamePlay.Drive.performed += Drive;
+        input.GamePlay.Nuteral.performed += Nuteral;
+        input.GamePlay.Reverce.performed += Reverce;
+
+        input.GamePlay.Brake.performed += Brake;
+        input.GamePlay.Brake.canceled += Brake;
+
+        input.GamePlay.HandBrake.performed += HandBrake;
+    }
+    private void OnDisable()
+    {
+        input.GamePlay.Camera.performed -= SwitchCamera;
+
+        input.GamePlay.Drive.performed -= Drive;
+        input.GamePlay.Nuteral.performed -= Nuteral;
+        input.GamePlay.Reverce.performed -= Reverce;
+
+        input.GamePlay.Brake.performed -= Brake;
+        input.GamePlay.Brake.canceled -= Brake;
+
+        input.GamePlay.HandBrake.performed -= HandBrake;
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.C)) SwitchCamera(); 
-
-        if (Input.GetKeyDown(KeyCode.R)) vehicle.gearBox.ChangeDriveMode(DriveMode.DRIVE);
-        if (Input.GetKeyDown(KeyCode.F)) vehicle.gearBox.ChangeDriveMode(DriveMode.NUTERAL);
-        if (Input.GetKeyDown(KeyCode.V)) vehicle.gearBox.ChangeDriveMode(DriveMode.REVERCE);
-
-        if (Input.GetKeyDown(KeyCode.LeftShift) && vehicle.gearBox.PeekGearUp()) vehicle.gearBox.GearUp();
-        if(Input.GetKeyDown(KeyCode.LeftControl) && vehicle.gearBox.PeekGearDown()) vehicle.gearBox.GearDown();
+        rawSteeringInput = input.GamePlay.Steering.ReadValue<float>();
+        rawAccelrationInput = input.GamePlay.Acceleration.ReadValue<float>();
 
         // Raw Input
-        wheelSteering = Input.GetAxis("Horizontal");
-        pedalAcceleration = Mathf.Clamp01(Input.GetAxis("Vertical"));
-        pedalBrake = (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) ? 1 : 0;
-        if(Input.GetKeyDown(KeyCode.Space)) handBrake = (handBrake == 0) ? 1 : 0;
+        if (input.GamePlay.enabled)
+        {
+            float deltaTime = Time.deltaTime;
+            wheelSteering = Mathf.Lerp(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime);
+            pedalAcceleration = Mathf.Lerp(pedalAcceleration, rawAccelrationInput, steeringSencitivity * deltaTime);
+
+            if (Mathf.Abs(0 - pedalAcceleration) < steeringSencitivity * deltaTime) pedalAcceleration = 0;
+        }
+        else
+        {
+            wheelSteering = pedalAcceleration = 0;
+            handBrake = 1;
+        }
 
         acceleration = Mathf.Lerp(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration, 0.1F);
 
@@ -173,7 +215,12 @@ public class Driver_Player : MonoBehaviour
         isGearChanging = false;
     }
 
-    private void SwitchCamera()
+
+    private void Drive(InputAction.CallbackContext context) => vehicle.gearBox.ChangeDriveMode(DriveMode.DRIVE);
+    private void Nuteral(InputAction.CallbackContext context) => vehicle.gearBox.ChangeDriveMode(DriveMode.NUTERAL);
+    private void Reverce(InputAction.CallbackContext context) => vehicle.gearBox.ChangeDriveMode(DriveMode.REVERCE);
+
+    private void SwitchCamera(InputAction.CallbackContext context)
     {
         cameras[currentCamera++].m_Priority = 0;
         if(currentCamera >= cameras.Length) currentCamera = 0;
@@ -181,8 +228,24 @@ public class Driver_Player : MonoBehaviour
 
     }
 
+    private void Brake(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            pedalBrake = 1;
+        else if (context.canceled)
+            pedalBrake = 0;
+    }
+    private void HandBrake(InputAction.CallbackContext context)
+    {
+        handBrake = (handBrake != 0) ? 0 : 1;
+    }
+
     private void OnDestroy()
     {
         cancellationTokenSource.Cancel();
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameManager.Instance.CurrentGamePlayMode.Failed();
     }
 }

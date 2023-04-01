@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
+using Ajas.FrameWork;
 using UnityEngine;
 
 namespace Ajas.Vehicle
@@ -24,6 +20,9 @@ namespace Ajas.Vehicle
 
         [Header("Engine Sound")]
         [SerializeField] EngineSound[] engineSounds;
+
+        [Header("Lights")]
+        [SerializeField] Material brakeMaterial;
 
         Rigidbody m_RigidBody;
         Transform m_Transform;
@@ -63,12 +62,17 @@ namespace Ajas.Vehicle
         private void Update()
         {
 
-            rpm = (int) engine.GetEngineRPM();
+            rpm = (int)engine.GetEngineRPM();
             currentGear = gearBox.GetCurrentGear();
 
             if (steeringWheel) UpdateSteering(steering);
             foreach (EngineSound engineSound in engineSounds) engineSound.UpdateSound(acceleration, engine.GetEngineRPM());
             if (vehicleMeter) vehicleMeter.UpdateMeter(speed, rpm, currentGear);
+
+            if (brakeMaterial != null && (handbraking > 0 || braking > 0))
+                brakeMaterial.SetFloat("_Emission", 1);
+            else
+                brakeMaterial.SetFloat("_Emission", 0);
         }
         private void Start()
         {

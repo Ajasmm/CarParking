@@ -27,8 +27,8 @@ namespace Ajas.Vehicle
         AudioSource audioSource;
 
         float accelerationVolume, fadeVolume;
-        public float rpmInRange, rpmRange;
-        public float pitchValue, pitchRange;
+        float rpmInRange, rpmRange;
+        float pitchValue, pitchRange;
 
         private void Awake()
         {
