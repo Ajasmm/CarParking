@@ -9,6 +9,7 @@ namespace Ajas.FrameWork
         [Header("GameMode default")]
         [SerializeField] protected Transform playerStartPos;
         [SerializeField] protected ParkingLot parkingLot;
+        [SerializeField] public bool isPlaying = false;
 
         [SerializeField] public bool isLastLvel = false;
 

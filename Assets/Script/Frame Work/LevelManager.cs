@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Ajas.FrameWork
 {
@@ -13,6 +15,11 @@ namespace Ajas.FrameWork
         [SerializeField] protected GameObject win_UI;
         [SerializeField] protected GameObject fail_UI;
 
+        [Header("Transition")]
+        [SerializeField] float transitionTime = 2;
+        [SerializeField] AnimationCurve fallOutEffect;
+        [SerializeField] Image transitionImage;
+
         private GamePlayMode gamePlayMode;
 
         private void OnEnable()
@@ -22,6 +29,8 @@ namespace Ajas.FrameWork
 
         private async void RegisterGameMode()
         {
+            StartCoroutine(DoTransitionEffect());
+
             GamePlayMode existingGamePlayMode = GameManager.Instance.CurrentGamePlayMode;
             if(existingGamePlayMode != null)
                 Destroy(existingGamePlayMode.gameObject);
@@ -65,6 +74,25 @@ namespace Ajas.FrameWork
         public void MainMenu()
         {
             Debug.Log("Sorry No MainMenu for Now");
+        }
+
+        IEnumerator DoTransitionEffect()
+        {
+            transitionImage.gameObject.SetActive(true);
+            Color color = transitionImage.color;
+            float time = 0;
+            color.a = fallOutEffect.Evaluate(time);
+
+            while(color.a > 0)
+            {
+                time += Time.deltaTime * (1 / transitionTime);
+                color.a = fallOutEffect.Evaluate(time);
+                transitionImage.color = color;
+                yield return null;
+            }
+            color.a = 0;
+            transitionImage.color = color;
+            transitionImage.gameObject.SetActive(false);
         }
     }
 }

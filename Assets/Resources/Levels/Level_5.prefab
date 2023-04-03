@@ -164,6 +164,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 1 Heavy Parking
       objectReference: {fileID: 0}
+    - target: {fileID: 8366556099402225533, guid: c0a6c45522ff1b44eaf98a1c5aec60e4, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7f915564e02d7624aaa88d7674e83075, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0a6c45522ff1b44eaf98a1c5aec60e4, type: 3}
 --- !u!4 &5078174656143233208 stripped
@@ -178,6 +182,18 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2008560118610369504}
     m_Modifications:
+    - target: {fileID: 1185328568786379591, guid: 5a34a30979ff7c948bffe9b00e744f86, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7035d7f8757dc2946904e38b831bf42b, type: 2}
+    - target: {fileID: 3373566420251125024, guid: 5a34a30979ff7c948bffe9b00e744f86, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4add69fc6d74a5946ae4c9a81ed429ef, type: 2}
+    - target: {fileID: 4056258335820458551, guid: 5a34a30979ff7c948bffe9b00e744f86, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fcf59a39d922f5b408fb9de922c1ee34, type: 2}
     - target: {fileID: 6299659735218842678, guid: 5a34a30979ff7c948bffe9b00e744f86, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -288,6 +304,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 1 Heavy Parking (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8366556099402225533, guid: c0a6c45522ff1b44eaf98a1c5aec60e4, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7f915564e02d7624aaa88d7674e83075, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c0a6c45522ff1b44eaf98a1c5aec60e4, type: 3}
 --- !u!4 &7775330627777814413 stripped
@@ -437,6 +457,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2008560118610369504}
     m_Modifications:
+    - target: {fileID: 5980154296128901197, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7f915564e02d7624aaa88d7674e83075, type: 2}
     - target: {fileID: 5980154296131167631, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -485,6 +509,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7420986615252499739, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 7035d7f8757dc2946904e38b831bf42b, type: 2}
+    - target: {fileID: 7727517320304323490, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 4add69fc6d74a5946ae4c9a81ed429ef, type: 2}
+    - target: {fileID: 8083788154345464308, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: fcf59a39d922f5b408fb9de922c1ee34, type: 2}
     - target: {fileID: 8348326491092292783, guid: 60d89256756472a41a42e0a3c5e6204e, type: 3}
       propertyPath: m_Name
       value: 5 Car Parking

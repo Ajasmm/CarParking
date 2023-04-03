@@ -19,16 +19,21 @@ public class GPM_LevelOne : GamePlayMode
     }
     public override void OnPlay()
     {
+        isPlaying = true;
+        Time.timeScale = 1;
+
         input.GamePlay.Enable();
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
     }
 
     public override void OnPause()
     {
+        isPlaying = false;
+        Time.timeScale = 0;
+
         input.GamePlay.Disable();
         input.Menu.Enable();
 
-        Time.timeScale = 0;
 
         if (gamePlay_UI) gamePlay_UI.SetActive(false);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
@@ -36,10 +41,12 @@ public class GPM_LevelOne : GamePlayMode
 
     public override void OnResume()
     {
+        isPlaying = true;
+        Time.timeScale = 1;
+
         input.GamePlay.Enable();
         input.Menu.Disable();
 
-        Time.timeScale = 1;
 
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(false);
@@ -58,6 +65,9 @@ public class GPM_LevelOne : GamePlayMode
     }
     public override void OnStop()
     {
+        isPlaying = false;
+        Time.timeScale = 1;
+
         input?.GamePlay.Disable();
         input?.Menu.Enable();
 

@@ -19,7 +19,7 @@ public class ParkingLot : MonoBehaviour
     }
     private void Update()
     {
-        if (!isPlayerIn) return;
+        if (!isPlayerIn || !GameManager.Instance.CurrentGamePlayMode.isPlaying) return;
 
         tempTime -= Time.deltaTime;
         hologramMaterial.SetFloat("_CustomAlpha", tempTime / stayTime);
