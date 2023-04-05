@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace Ajas.FrameWork
@@ -32,9 +33,11 @@ namespace Ajas.FrameWork
             StartCoroutine(DoTransitionEffect());
 
             GamePlayMode existingGamePlayMode = GameManager.Instance.CurrentGamePlayMode;
-            if(existingGamePlayMode != null)
+            if (existingGamePlayMode != null)
+            {
                 Destroy(existingGamePlayMode.gameObject);
-
+                Resources.UnloadUnusedAssets();
+            }
             int currentLevel = GameManager.Instance.CurrentLevel;
             string levelName = "Levels/Level_" + currentLevel.ToString();
 
@@ -68,12 +71,12 @@ namespace Ajas.FrameWork
         }
         public void NextLevel()
         {
-            GameManager.Instance.CurrentLevel++;
+            GameManager.Instance.CurrentLevel = GameManager.Instance.CurrentLevel + 1;
             RegisterGameMode();
         }
         public void MainMenu()
         {
-            Debug.Log("Sorry No MainMenu for Now");
+            SceneManager.LoadSceneAsync(0);
         }
 
         IEnumerator DoTransitionEffect()
@@ -85,7 +88,7 @@ namespace Ajas.FrameWork
 
             while(color.a > 0)
             {
-                time += Time.deltaTime * (1 / transitionTime);
+                time += Time.unscaledDeltaTime * (1 / transitionTime);
                 color.a = fallOutEffect.Evaluate(time);
                 transitionImage.color = color;
                 yield return null;

@@ -293,6 +293,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "TimeLine",
+            "id": "0d32adf1-5dfc-4fe8-80a7-831cb2b11a2f",
+            "actions": [
+                {
+                    "name": "Skip",
+                    "type": "Button",
+                    "id": "5584d711-0d1d-416d-9c07-4e7ed1a6c163",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "2d351ba7-e023-4c1a-9878-1279c45a9529",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Skip",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

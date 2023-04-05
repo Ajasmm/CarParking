@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using System.IO;
 
 namespace Ajas.FrameWork
 {
@@ -23,12 +24,19 @@ namespace Ajas.FrameWork
         }
         public GameObject player { private set; get; }
         public MyInput input;
-        public int CurrentLevel = 1;
+
+        public int CurrentLevel {
+            get { return currentLevel; }
+            set { currentLevel = value;
+                WritePlayerData(); } }
+        private int currentLevel = 0;
+        private int MaxLevel = 10;
 
         public GamePlayMode CurrentGamePlayMode { 
             set { RegisterGameMode(value); } 
             get { return currentGamePlayMode; } }
         private GamePlayMode currentGamePlayMode;
+        public int HighestLevelReached { private set; get; }
 
         private static bool isGameEnded = false;
         private static GameManager instatnce;
@@ -80,6 +88,37 @@ namespace Ajas.FrameWork
             Debug.Log("You Lost the Game :(");
             currentGamePlayMode?.Failed();
         }
+
+
+        public void ReadPlayerData()
+        {
+            PlayerData playerData = new PlayerData(0);
+            string filePath = Application.persistentDataPath + "/PlayerData.json";
+            Debug.Log(filePath);
+
+            if (File.Exists(filePath))
+            {
+                string jsonData = File.ReadAllText(filePath);
+                playerData = JsonUtility.FromJson<PlayerData>(jsonData);
+            }
+
+           HighestLevelReached = playerData.highestLevelReached;
+        }
+        public void WritePlayerData()
+        {
+            ReadPlayerData();
+
+            PlayerData playerData = new PlayerData(HighestLevelReached);
+            if(currentLevel > MaxLevel) currentLevel = MaxLevel;
+            if (HighestLevelReached < currentLevel)
+                HighestLevelReached = currentLevel;
+            
+            playerData.highestLevelReached = HighestLevelReached;
+
+            string jsonData = JsonUtility.ToJson(playerData, true);
+            File.WriteAllText(Application.persistentDataPath + "/PlayerData.json", jsonData);
+        }
+
 
         private void OnDestroy()
         {

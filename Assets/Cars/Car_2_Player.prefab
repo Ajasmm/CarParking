@@ -74,7 +74,7 @@ MonoBehaviour:
   - {fileID: 9032760720837308363}
   - {fileID: 6017780415037553753}
   steeringWheel: {fileID: 0}
-  maxSteeringWheelAngle: 0
+  maxSteeringWheelAngle: 35
   vehicleMeter: {fileID: 0}
   downForce: 2000
   downForceSpeed: 100
@@ -96,7 +96,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53799afcefc551a4f91f6d7555df52aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  steeringSencitivity: 1
+  steeringSencitivity: 0.75
+  audioMixer: {fileID: 24100000, guid: 52e7c21fb2b735742af59e65a7f22c77, type: 2}
   cameras:
   - {fileID: 943200763718656355}
   - {fileID: 5849922092707258753}
@@ -239,25 +240,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.35
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 98000
+    damper: 14700
     targetPosition: 0.5
-  m_SuspensionDistance: 0
+  m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 640
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_Enabled: 1
 --- !u!114 &6010433225735919583
 MonoBehaviour:
@@ -315,7 +316,7 @@ AudioSource:
   m_GameObject: {fileID: 861333133005470461}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -1004985084723698363, guid: 52e7c21fb2b735742af59e65a7f22c77, type: 2}
   m_audioClip: {fileID: 8300000, guid: 56894f2465acfb14c838b01e858ccf5b, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -325,7 +326,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
@@ -362,7 +363,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -419,10 +420,10 @@ MonoBehaviour:
   d_rpm: 1000
   minRPM: 900
   minPitch: 1
-  fadeInRPMRange: 1000
+  fadeInRPMRange: 500
   maxRPM: 2000
   maxPitch: 1.2
-  fadeOutRPMRange: 1000
+  fadeOutRPMRange: 500
   deacceleratinVolume: 0.6
 --- !u!1 &1747343031719095968
 GameObject:
@@ -562,7 +563,7 @@ AudioSource:
   m_GameObject: {fileID: 2581131122450156417}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -1004985084723698363, guid: 52e7c21fb2b735742af59e65a7f22c77, type: 2}
   m_audioClip: {fileID: 8300000, guid: c2cb87e158e8c104b9c8b42611a2c4f2, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -572,7 +573,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
@@ -609,7 +610,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -666,10 +667,10 @@ MonoBehaviour:
   d_rpm: 1000
   minRPM: 6000
   minPitch: 1
-  fadeInRPMRange: 1000
+  fadeInRPMRange: 500
   maxRPM: 12000
   maxPitch: 1.4
-  fadeOutRPMRange: 1000
+  fadeOutRPMRange: 500
   deacceleratinVolume: 0.6
 --- !u!1 &3764898301330940202
 GameObject:
@@ -713,7 +714,7 @@ AudioSource:
   m_GameObject: {fileID: 3764898301330940202}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -1004985084723698363, guid: 52e7c21fb2b735742af59e65a7f22c77, type: 2}
   m_audioClip: {fileID: 8300000, guid: d447001bb4cb8204d8b9435cba6d3c7c, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -723,7 +724,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
@@ -760,7 +761,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -817,10 +818,10 @@ MonoBehaviour:
   d_rpm: 1000
   minRPM: 2000
   minPitch: 1
-  fadeInRPMRange: 1000
+  fadeInRPMRange: 500
   maxRPM: 4000
   maxPitch: 1.2
-  fadeOutRPMRange: 1000
+  fadeOutRPMRange: 500
   deacceleratinVolume: 0.6
 --- !u!1 &5949580885227356663
 GameObject:
@@ -846,7 +847,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5949580885227356663}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.21063232, y: -0.17998737, z: 0.9235494}
+  m_LocalPosition: {x: 0.21063232, y: 0.58601254, z: 0.9235494}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -881,8 +882,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6054636135842085347}
-  m_LocalRotation: {x: 0.0000000047434985, y: 0.96124876, z: -0.2756825, w: 0.000000016539612}
-  m_LocalPosition: {x: 0, y: 5, z: 8}
+  m_LocalRotation: {x: 0.000000059604645, y: 0.9612488, z: -0.2756825, w: 0.00000008940697}
+  m_LocalPosition: {x: -0.0000009536743, y: 5, z: 8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -960,7 +961,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6654167311939772074}
   m_LocalRotation: {x: -0.000000021855698, y: 0.00000003774895, z: -8.250296e-16, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.628063}
+  m_LocalPosition: {x: 0, y: 0.766, z: 1.628063}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1015,7 +1016,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6846761477335919521}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.76599985, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1466,7 +1467,7 @@ AudioSource:
   m_GameObject: {fileID: 6932042077667380847}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -1004985084723698363, guid: 52e7c21fb2b735742af59e65a7f22c77, type: 2}
   m_audioClip: {fileID: 8300000, guid: 2659a441f277b4849b46ad9d14055abd, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -1476,7 +1477,7 @@ AudioSource:
   Spatialize: 0
   SpatializePostEffects: 0
   Priority: 128
-  DopplerLevel: 1
+  DopplerLevel: 0
   MinDistance: 1
   MaxDistance: 500
   Pan2D: 0
@@ -1513,7 +1514,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 0
+      value: 1
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -1570,10 +1571,10 @@ MonoBehaviour:
   d_rpm: 1000
   minRPM: 4000
   minPitch: 1
-  fadeInRPMRange: 1000
+  fadeInRPMRange: 500
   maxRPM: 6000
   maxPitch: 1.3
-  fadeOutRPMRange: 1000
+  fadeOutRPMRange: 500
   deacceleratinVolume: 0.6
 --- !u!1 &7526368031204580836
 GameObject:
@@ -1600,7 +1601,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7526368031204580836}
   m_LocalRotation: {x: 0.2756825, y: -0, z: -0, w: 0.96124876}
-  m_LocalPosition: {x: 0, y: 5, z: -8}
+  m_LocalPosition: {x: 0.0000009536743, y: 5, z: -8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1697,25 +1698,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.35
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 98000
+    damper: 14700
     targetPosition: 0.5
-  m_SuspensionDistance: 0
+  m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 640
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_Enabled: 1
 --- !u!114 &1487144152826291893
 MonoBehaviour:
@@ -1870,25 +1871,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.35
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 98000
+    damper: 14700
     targetPosition: 0.5
-  m_SuspensionDistance: 0
+  m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 640
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_Enabled: 1
 --- !u!114 &4308981292300361939
 MonoBehaviour:
@@ -1961,7 +1962,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8853158367605147804}
   m_LocalRotation: {x: -0.000000021855698, y: 0.00000003774895, z: -8.250296e-16, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -1.469811}
+  m_LocalPosition: {x: 0, y: 0.76599985, z: -1.469811}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2033,25 +2034,25 @@ WheelCollider:
   m_Center: {x: 0, y: 0, z: 0}
   m_Radius: 0.35
   m_SuspensionSpring:
-    spring: 35000
-    damper: 4500
+    spring: 98000
+    damper: 14700
     targetPosition: 0.5
-  m_SuspensionDistance: 0
+  m_SuspensionDistance: 0.3
   m_ForceAppPointDistance: 0
-  m_Mass: 20
+  m_Mass: 640
   m_WheelDampingRate: 0.25
   m_ForwardFriction:
-    m_ExtremumSlip: 0.4
+    m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
-    m_AsymptoteSlip: 0.8
-    m_AsymptoteValue: 0.5
-    m_Stiffness: 1
+    m_AsymptoteSlip: 0.5
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_SidewaysFriction:
     m_ExtremumSlip: 0.2
     m_ExtremumValue: 1
     m_AsymptoteSlip: 0.5
-    m_AsymptoteValue: 0.75
-    m_Stiffness: 1
+    m_AsymptoteValue: 0.6
+    m_Stiffness: 10
   m_Enabled: 1
 --- !u!114 &2035797865260649676
 MonoBehaviour:

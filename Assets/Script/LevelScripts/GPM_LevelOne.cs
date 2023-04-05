@@ -22,8 +22,12 @@ public class GPM_LevelOne : GamePlayMode
         isPlaying = true;
         Time.timeScale = 1;
 
+        player.SetActive(true);
         input.GamePlay.Enable();
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
+
+        player.SetActive(true);
+        player.GetComponent<Driver_Player>().SetSoundToHigh();
     }
 
     public override void OnPause()
@@ -37,6 +41,7 @@ public class GPM_LevelOne : GamePlayMode
 
         if (gamePlay_UI) gamePlay_UI.SetActive(false);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
+        player.GetComponent<Driver_Player>().SetSoundToLow();
     }
 
     public override void OnResume()
@@ -50,6 +55,7 @@ public class GPM_LevelOne : GamePlayMode
 
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(false);
+        player.GetComponent<Driver_Player>().SetSoundToHigh();
     }
 
     public override void Won()
@@ -72,6 +78,7 @@ public class GPM_LevelOne : GamePlayMode
         input?.Menu.Enable();
 
         DisableUI();
+        if (player) player.GetComponent<Driver_Player>().SetSoundToLow();
     }
 
     private void EscapeMenu(InputAction.CallbackContext context)

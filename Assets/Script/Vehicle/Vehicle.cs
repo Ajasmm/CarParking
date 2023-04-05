@@ -1,5 +1,8 @@
 using Ajas.FrameWork;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Ajas.Vehicle
 {
@@ -74,17 +77,12 @@ namespace Ajas.Vehicle
             else
                 brakeMaterial.SetFloat("_Emission", 0);
         }
-        private void Start()
-        {
-            RegisterPlayer();
-        }
 
         private void UpdateSteering(float steering)
         {
             float steeringWheelAngle = steering - prevSteering;
             steeringWheelAngle *= maxSteeringWheelAngle;
             prevSteering = steering;
-
 
             steeringWheel.Rotate(Vector3.up, steeringWheelAngle, Space.Self);
         }
@@ -127,12 +125,15 @@ namespace Ajas.Vehicle
             this.acceleration = acceleration;
             this.braking = pedalBrake;
             this.handbraking = handBrake;
-        }
 
-        private void RegisterPlayer()
-        {
-            GameObject player = this.gameObject; 
-            GameManager.Instance?.RegisterPlayer(player);
+            bool negativeSteering = (this.steering < 0) ? true : false;
+            float steering;
+
+            steering = (Mathf.Lerp(0.1F, 1, (50 - speed) / 50));
+            if (Mathf.Abs(this.steering) > steering)
+                this.steering = (negativeSteering) ? steering * -1 : steering;
+
+
         }
 
         private void OnDestroy()

@@ -6,16 +6,19 @@ using System.Diagnostics;
 using Cinemachine;
 using Ajas.FrameWork;
 using UnityEngine.InputSystem;
+using UnityEngine.Audio;
+using System.Collections;
 
 [RequireComponent(typeof(Vehicle))]
 public class Driver_Player : MonoBehaviour
 {
     [Header("Vehicle Parameter")]
     [SerializeField] float steeringSencitivity = 1;
+    [SerializeField] AudioMixer audioMixer;
 
     [Header("Cameras")]
     [SerializeField] CinemachineVirtualCamera[] cameras;
-    
+
     int currentCamera = 0;
 
     float rawSteeringInput, rawAccelrationInput;
@@ -37,10 +40,15 @@ public class Driver_Player : MonoBehaviour
 
     private void Start()
     {
+        if (GameManager.Instance.player != null && GameManager.Instance.player != this.gameObject) Destroy(this.gameObject);
+        else GameManager.Instance.RegisterPlayer(this.gameObject);
+
         vehicle.gearBox.Initilize();
-        foreach(CinemachineVirtualCamera vcam in cameras)  vcam.m_Priority = 0;
+        foreach (CinemachineVirtualCamera vcam in cameras) vcam.m_Priority = 0;
         cameras[currentCamera].m_Priority = 10;
         handBrake = 1;
+
+        DontDestroyOnLoad(this.gameObject);
     }
 
     private void OnEnable()
@@ -79,13 +87,11 @@ public class Driver_Player : MonoBehaviour
         rawAccelrationInput = input.GamePlay.Acceleration.ReadValue<float>();
 
         // Raw Input
+        float deltaTime = Time.deltaTime;
         if (input.GamePlay.enabled)
         {
-            float deltaTime = Time.deltaTime;
             wheelSteering = Mathf.Lerp(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime);
-            pedalAcceleration = Mathf.Lerp(pedalAcceleration, rawAccelrationInput, steeringSencitivity * deltaTime);
-
-            if (Mathf.Abs(0 - pedalAcceleration) < steeringSencitivity * deltaTime) pedalAcceleration = 0;
+            pedalAcceleration = rawAccelrationInput;
         }
         else
         {
@@ -93,7 +99,7 @@ public class Driver_Player : MonoBehaviour
             handBrake = 1;
         }
 
-        acceleration = Mathf.Lerp(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration, 0.1F);
+        acceleration = Mathf.Lerp(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration,deltaTime * 5);
 
         vehicle.UpdateParameter(wheelSteering, acceleration, pedalBrake, handBrake);
     }
@@ -109,109 +115,51 @@ public class Driver_Player : MonoBehaviour
         float currentRPM = engine.GetEngineRPM();
         float speed = vehicle.speed;
 
-        if(currentRPM < gearBox.gearDownRPM && !isGearChanging)
+        if (currentRPM < gearBox.gearDownRPM && !isGearChanging)
         {
             if (gearBox.PeekGearDown())
             {
-                GearDown();
+                StartCoroutine(GearDown());
             }
-        }else if(speed > currentRatio.gearUpSpeed && !isGearChanging)
+        } else if (speed > currentRatio.gearUpSpeed && !isGearChanging)
         {
             if (gearBox.PeekGearUp())
             {
-                GearUp();
+                StartCoroutine(GearUp());
             }
         }
     }
-    private async void GearDown()
+    private IEnumerator GearDown()
     {
         isGearChanging = true;
-        double timeGap;
-        Stopwatch stopwatch = new Stopwatch();
-        gearAcceleration = acceleration;
 
-        await Task.Run(() =>
-        {
-            while(gearAcceleration > 0 || clutch < 1)
-            {
-                timeGap = stopwatch.Elapsed.TotalSeconds * 8;
-                stopwatch.Restart();
+        gearAcceleration = 0;
+        clutch = 1;
 
-                if (gearAcceleration > 0) gearAcceleration -= (float)timeGap;
-                if (gearAcceleration < 0) gearAcceleration = 0;
+        yield return new WaitForSeconds(0.25F);
 
-                if(clutch < 1) clutch += (float)timeGap;
-                if (clutch > 1) clutch = 1;
-                
-                if (gearAcceleration == 0 && clutch == 1) break;
+        vehicle.gearBox.GearDown();
 
-                if (cancellationTokenSource.IsCancellationRequested) return;
-            }
-
-            vehicle.gearBox.GearDown();
-            
-
-            while (clutch > 0)
-            {
-                timeGap = stopwatch.Elapsed.TotalSeconds * 8;
-                stopwatch.Restart();
-
-                gearAcceleration = Mathf.Lerp(gearAcceleration, pedalAcceleration, 0.1F);
-
-                if(clutch > 0) clutch -= (float) timeGap;
-                if(clutch < 0) clutch = 0;
-                if (clutch == 0) break;
-
-                if (cancellationTokenSource.IsCancellationRequested) return;
-            }
-
-
-        }, cancellationTokenSource.Token);
+        clutch = 0;
+        yield return new WaitForSeconds(0.25F);
+       
         isGearChanging = false;
     }
-    private async void GearUp()
+    private IEnumerator GearUp()
     {
         isGearChanging = true;
-        double timeGap;
-        Stopwatch stopwatch = new Stopwatch();
-        gearAcceleration = acceleration;
 
-        await Task.Run(() =>
-        {
-            while (gearAcceleration > 0 || clutch < 1)
-            {
-                timeGap = stopwatch.Elapsed.TotalSeconds * 4;
-                stopwatch.Restart();
+        gearAcceleration = 0;
+        clutch = 1;
 
-                if (gearAcceleration > 0) gearAcceleration -= (float)timeGap;
-                if (gearAcceleration < 0) gearAcceleration = 0;
+        yield return new WaitForSeconds(0.25F);
 
-                if (clutch < 1) clutch += (float)timeGap;
-                if (clutch > 1) clutch = 1;
+        vehicle.gearBox.GearUp();
 
-                if (gearAcceleration == 0 && clutch == 1) break;
+        clutch = 0;
 
-                if (cancellationTokenSource.IsCancellationRequested) return;
-            }
+        yield return new WaitForSeconds(0.25F);
 
-            vehicle.gearBox.GearUp();
-
-            while (clutch > 0)
-            {
-                timeGap = stopwatch.Elapsed.TotalSeconds * 2;
-                stopwatch.Restart();
-
-                gearAcceleration = Mathf.Lerp(gearAcceleration, pedalAcceleration, ((float)timeGap) * 2);
-
-                if(clutch > 0) clutch -= (float)timeGap;
-                if (clutch < 0) clutch = 0;
-                if (clutch == 0) break;
-
-                if (cancellationTokenSource.IsCancellationRequested) return;
-            }
-
-
-        }, cancellationTokenSource.Token);
         isGearChanging = false;
     }
 
@@ -246,6 +194,40 @@ public class Driver_Player : MonoBehaviour
     }
     private void OnCollisionEnter(Collision collision)
     {
-        GameManager.Instance.CurrentGamePlayMode.Failed();
+        if (GameManager.Instance.CurrentGamePlayMode != null && GameManager.Instance.CurrentGamePlayMode.isPlaying)
+            GameManager.Instance.CurrentGamePlayMode.Failed();
+    }
+
+    public void SetSoundToLow()
+    {
+        StartCoroutine(SetSoundToLowCoroutine());
+    }
+    public void SetSoundToHigh()
+    {
+        StartCoroutine(SetSoundToHighCoroutine());
+    }
+    private IEnumerator SetSoundToHighCoroutine()
+    {
+        float volume;
+        audioMixer.GetFloat("Vehicle Volume", out volume);
+        while (volume < 0)
+        {
+            volume += Time.unscaledDeltaTime * 80 * 2;
+            if (volume > 0) volume = 0;
+            audioMixer.SetFloat("Vehicle Volume", volume);
+            yield return null;
+        }
+    }
+    private IEnumerator SetSoundToLowCoroutine()
+    {
+        float volume;
+        audioMixer.GetFloat("Vehicle Volume", out volume);
+        while (volume > -80)
+        {
+            volume -= Time.unscaledDeltaTime * 80 * 2;
+            if (volume < -80) volume = -80;
+            audioMixer.SetFloat("Vehicle Volume", volume);
+            yield return null;
+        }
     }
 }
