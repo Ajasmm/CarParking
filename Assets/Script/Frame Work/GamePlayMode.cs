@@ -21,6 +21,14 @@ namespace Ajas.FrameWork
         protected GameObject player;
         protected MyInput input;
 
+        protected void OnEnable()
+        {
+            GameManager.Instance.OnPlayerChange += OnPlayerChange;
+        }
+        protected void OnDisable()
+        {
+            GameManager.Instance.OnPlayerChange -= OnPlayerChange;
+        }
         public abstract void OnStart();
         public abstract void OnStop();
         public abstract void OnPlay();
@@ -28,6 +36,7 @@ namespace Ajas.FrameWork
         public abstract void OnResume();
         public abstract void Won();
         public abstract void Failed();
+        protected abstract void OnPlayerChange(GameObject player);
 
         public void SetGameWindows(GameObject gamePlay_UI, GameObject pauseMenu_UI, GameObject win_UI, GameObject fail_UI)
         {

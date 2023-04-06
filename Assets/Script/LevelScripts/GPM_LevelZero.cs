@@ -117,4 +117,11 @@ public class GPM_LevelZero : GamePlayMode
     {
         OnPause();
     }
+
+    protected override void OnPlayerChange(GameObject player)
+    {
+        this.player = player;
+        player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
+        player.SetActive(true);
+    }
 }

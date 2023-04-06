@@ -22,7 +22,6 @@ public class LevelBtn : MonoBehaviour
     }
     public void SetInteractionMode(bool value)
     {
-        Debug.Log(m_Text.text + " Interaction mode set to " + value);
         button.interactable = value;
     }
 }

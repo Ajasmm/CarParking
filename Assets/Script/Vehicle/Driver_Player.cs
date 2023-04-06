@@ -40,7 +40,11 @@ public class Driver_Player : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.Instance.player != null && GameManager.Instance.player != this.gameObject) Destroy(this.gameObject);
+        if (GameManager.Instance.player != null && GameManager.Instance.player != this.gameObject)
+        {
+            Destroy(this.gameObject);
+            return;
+        }
         else GameManager.Instance.RegisterPlayer(this.gameObject);
 
         vehicle.gearBox.Initilize();
@@ -191,6 +195,8 @@ public class Driver_Player : MonoBehaviour
     private void OnDestroy()
     {
         cancellationTokenSource.Cancel();
+        GameManager.Instance.UnRegisterPlayer(this.gameObject);
+        UnityEngine.Debug.Log("I am Destroyed : " + this.gameObject.name);
     }
     private void OnCollisionEnter(Collision collision)
     {
@@ -200,11 +206,13 @@ public class Driver_Player : MonoBehaviour
 
     public void SetSoundToLow()
     {
+        if(this.gameObject.activeSelf)
         StartCoroutine(SetSoundToLowCoroutine());
     }
     public void SetSoundToHigh()
     {
-        StartCoroutine(SetSoundToHighCoroutine());
+        if (this.gameObject.activeSelf)
+            StartCoroutine(SetSoundToHighCoroutine());
     }
     private IEnumerator SetSoundToHighCoroutine()
     {

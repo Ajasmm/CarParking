@@ -25,7 +25,7 @@ namespace Ajas.Vehicle
         [SerializeField] EngineSound[] engineSounds;
 
         [Header("Lights")]
-        [SerializeField] Material brakeMaterial;
+        [SerializeField] public Material brakeMaterial;
 
         Rigidbody m_RigidBody;
         Transform m_Transform;
@@ -135,12 +135,6 @@ namespace Ajas.Vehicle
 
 
         }
-
-        private void OnDestroy()
-        {
-            if (GameManager.Instance?.player == this.gameObject) GameManager.Instance?.RegisterPlayer(null);
-        }
-
         public int GetSpeed() { return (int) speed; }
         public int GetEngineRPM() { return rpm; }
         public string GetCurrentGear() { return currentGear; }  

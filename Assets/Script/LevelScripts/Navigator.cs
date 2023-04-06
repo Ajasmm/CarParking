@@ -14,7 +14,7 @@ public class Navigator : MonoBehaviour
 
     float resetTime = 0;
 
-    private void Awake()
+    private void OnEnable()
     {
         agent = GetComponent<NavMeshAgent>();
         GetPlayer();
@@ -39,6 +39,5 @@ public class Navigator : MonoBehaviour
     {
         await GameManager.Instance.WaitForPlayer();
         player = GameManager.Instance.player.GetComponent<Transform>();
-
     }
 }

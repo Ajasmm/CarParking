@@ -13,11 +13,13 @@ public class MainMenu : MonoBehaviour
 
     [Header("Main Menu")]
     [SerializeField] private Button play_Btn;
-    [SerializeField] private Button about_Btn;
+    [SerializeField] private Button garage_Btn;
+    [SerializeField] private Button controls_Btn;
     [SerializeField] private Button exit_Btn;
 
     [SerializeField] private GameObject levelWindow;
-    [SerializeField] private GameObject aboutWindow;
+    [SerializeField] private GameObject garageWindow;
+    [SerializeField] private GameObject controlsWindow;
     [SerializeField] private GameObject exitWindow;
 
     MyInput input;
@@ -30,19 +32,24 @@ public class MainMenu : MonoBehaviour
         input.Menu.Enable();
 
         if (play_Btn) play_Btn.onClick.AddListener(OnPlay);
-        if (about_Btn) about_Btn.onClick.AddListener(OnAbout);
+        if (garage_Btn) garage_Btn.onClick.AddListener(OnGarage);
+        if (controls_Btn) controls_Btn.onClick.AddListener(OnControls);
         if (exit_Btn) exit_Btn.onClick.AddListener(OnExit);
 
+        GameManager.Instance.LoadPlayer();
+        GameManager.Instance.OnPlayerChange += OnPlayerChange;
         GetPlayer();
 
     }
     private void OnDisable()
     {
         if (play_Btn)  play_Btn.onClick.RemoveListener(OnPlay);
-        if (about_Btn) about_Btn.onClick.RemoveListener(OnAbout);
+        if (garage_Btn) garage_Btn.onClick.RemoveListener(OnGarage);
+        if (controls_Btn) controls_Btn.onClick.RemoveListener(OnControls);
         if (exit_Btn) exit_Btn.onClick.RemoveListener(OnExit);
 
         if (player != null) player.SetActive(false);
+        GameManager.Instance.OnPlayerChange -= OnPlayerChange;
     }
 
     private void OnPlay()
@@ -51,10 +58,15 @@ public class MainMenu : MonoBehaviour
         if (levelWindow) levelWindow.SetActive(true);
         player.GetComponent<Driver_Player>().SetSoundToHigh();
     }
-    private void OnAbout()
+    private void OnGarage()
     {
         DisableAllWindows();
-        if (aboutWindow) aboutWindow.SetActive(true);
+        if(garageWindow) garageWindow.SetActive(true);
+    }
+    private void OnControls()
+    {
+        DisableAllWindows();
+        if (controlsWindow) controlsWindow.SetActive(true);
     }
     private void OnExit()
     {
@@ -64,7 +76,8 @@ public class MainMenu : MonoBehaviour
     private void DisableAllWindows()
     {
         if (levelWindow) levelWindow.SetActive(false);
-        if (aboutWindow) aboutWindow.SetActive(false);
+        if (garageWindow) garageWindow.SetActive(false);
+        if (controlsWindow) controlsWindow.SetActive(false);
         if (exitWindow) exitWindow.SetActive(false);
     }
 
@@ -74,7 +87,11 @@ public class MainMenu : MonoBehaviour
         player = GameManager.Instance.player;
 
         Transform playerTransform = player.GetComponent<Transform>();
-        playerTransform.SetPositionAndRotation(playerStartTransform.position, playerStartTransform.rotation);
+        if(playerStartTransform) playerTransform.SetPositionAndRotation(playerStartTransform.position, playerStartTransform.rotation);
         playerTransform.parent = playerStartTransform;
     }
+    private void OnPlayerChange(GameObject player)
+    {
+       GetPlayer();
+    } 
 }

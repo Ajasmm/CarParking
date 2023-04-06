@@ -26,6 +26,7 @@ public class GPM_LevelOne : GamePlayMode
         input.GamePlay.Enable();
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
 
+        DisableUI();
         player.SetActive(true);
         player.GetComponent<Driver_Player>().SetSoundToHigh();
     }
@@ -90,7 +91,7 @@ public class GPM_LevelOne : GamePlayMode
         await GameManager.Instance.WaitForPlayer();
         player = GameManager.Instance.player;
 
-        player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
+        if(playerStartPos) player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
         Time.timeScale = 1F;
         OnPlay();
     }
@@ -98,5 +99,11 @@ public class GPM_LevelOne : GamePlayMode
     private void OnDestroy()
     {
         OnStop();
+    }
+
+    protected override void OnPlayerChange(GameObject player)
+    {
+        this.player = player;
+        player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
     }
 }

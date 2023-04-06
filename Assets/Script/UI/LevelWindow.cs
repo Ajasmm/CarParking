@@ -26,7 +26,7 @@ public class LevelWindow : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.ReadPlayerData();
-        int highestLevelReached = GameManager.Instance.HighestLevelReached;
+        int highestLevelReached = GameManager.Instance.PlayerData.highestLevelReached;
 
         LevelBtn button;
 
@@ -47,6 +47,8 @@ public class LevelWindow : MonoBehaviour
     private void OnButtonClick(int level)
     {
         GameManager.Instance.CurrentLevel = level;
+        GameManager.Instance.player.transform.parent = null;
+        DontDestroyOnLoad(GameManager.Instance.player);
         SceneManager.LoadSceneAsync(1);
     }
 
@@ -55,11 +57,4 @@ public class LevelWindow : MonoBehaviour
 
 }
 
-public struct PlayerData
-{
-    public int highestLevelReached;
-    public PlayerData(int defaultHighestLevel)
-    {
-        this.highestLevelReached = defaultHighestLevel;
-    }
-}
+
