@@ -38,7 +38,7 @@ public class ParkingLot : MonoBehaviour
         direction = Vector3.Dot(playerTransform.forward, m_Transform.forward);
 
 
-        if (distance > 0.5F) tempTime = stayTime;
+        if (distance > 0.75F) tempTime = stayTime;
         else if(Mathf.Abs(direction) < 0.75F) tempTime = stayTime;
         else tempTime -= Time.deltaTime;
 

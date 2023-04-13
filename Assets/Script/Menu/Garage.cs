@@ -76,7 +76,7 @@ public class Garage : MonoBehaviour
     
     private void OnChangeMaterial(PlayerData.VehicleColor color)
     {
-        GameManager.Instance.ChangePlayerMaterial(color);
+        StartCoroutine(GameManager.Instance.ChangePlayerMaterial(color))    ;
 
     }
 }

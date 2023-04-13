@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Vehicles
+  m_EditorClassIdentifier: 
+  m_GroupName: Vehicles
+  m_Data:
+    m_SerializedData: []
+  m_GUID: 38d1499a41888424281d99f2818b5fb0
+  m_SerializeEntries:
+  - m_GUID: 0e742f318b58c6948a01486ab3e7539b
+    m_Address: Assets/Player
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 42980618a88b34843b9bde9f97f3f7f5, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 00f9223f78dfcd14db84d3cae0e9b9c9, type: 2}
+    - {fileID: 11400000, guid: d505145905ea80e4aacbc2fef716d343, type: 2}

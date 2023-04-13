@@ -39,7 +39,7 @@ public class LevelWindow : MonoBehaviour
                 OnButtonClick(value);
             });
             button.transform.SetParent(parentOfButtons);
-            button.SetText("Level " + i);
+            button.SetText((i + 1).ToString());
             button.SetInteractionMode((i <= highestLevelReached) ? true : false);
         }
     }
@@ -49,7 +49,7 @@ public class LevelWindow : MonoBehaviour
         GameManager.Instance.CurrentLevel = level;
         GameManager.Instance.player.transform.parent = null;
         DontDestroyOnLoad(GameManager.Instance.player);
-        SceneManager.LoadSceneAsync(1);
+        SceneManager.LoadSceneAsync(2);
     }
 
     

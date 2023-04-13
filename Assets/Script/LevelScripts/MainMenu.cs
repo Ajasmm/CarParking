@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private Transform playerStartTransform;
-    [SerializeField] private AudioMixer audioMixer;
 
     [Header("Main Menu")]
     [SerializeField] private Button play_Btn;
@@ -36,9 +36,14 @@ public class MainMenu : MonoBehaviour
         if (controls_Btn) controls_Btn.onClick.AddListener(OnControls);
         if (exit_Btn) exit_Btn.onClick.AddListener(OnExit);
 
-        GameManager.Instance.LoadPlayer();
         GameManager.Instance.OnPlayerChange += OnPlayerChange;
-        GetPlayer();
+
+        GameManager.Instance.SetVehicleSoundToLow();
+        GameManager.Instance.SetMenuSoundToHigh();
+        GameManager.Instance.LoadPlayer();
+
+        GameManager.Instance.CurrentGamePlayMode = null;
+        StartCoroutine(GetPlayer());
 
     }
     private void OnDisable()
@@ -49,14 +54,15 @@ public class MainMenu : MonoBehaviour
         if (exit_Btn) exit_Btn.onClick.RemoveListener(OnExit);
 
         if (player != null) player.SetActive(false);
-        GameManager.Instance.OnPlayerChange -= OnPlayerChange;
+        if(GameManager.Instance) GameManager.Instance.OnPlayerChange -= OnPlayerChange;
+
+        if (GameManager.Instance) GameManager.Instance.SetMenuSoundToLow();
     }
 
     private void OnPlay()
     {
         DisableAllWindows();
-        if (levelWindow) levelWindow.SetActive(true);
-        player.GetComponent<Driver_Player>().SetSoundToHigh();
+        if(levelWindow) levelWindow.SetActive(true);
     }
     private void OnGarage()
     {
@@ -81,17 +87,24 @@ public class MainMenu : MonoBehaviour
         if (exitWindow) exitWindow.SetActive(false);
     }
 
-    private async void GetPlayer()
+    private IEnumerator GetPlayer()
     {
-        await GameManager.Instance.WaitForPlayer();
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
-
+        
         Transform playerTransform = player.GetComponent<Transform>();
-        if(playerStartTransform) playerTransform.SetPositionAndRotation(playerStartTransform.position, playerStartTransform.rotation);
-        playerTransform.parent = playerStartTransform;
+        
+        playerTransform.parent = null;
+        SceneManager.MoveGameObjectToScene(player, this.gameObject.scene);
+
+        if (playerStartTransform)
+        {
+            playerTransform.SetPositionAndRotation(playerStartTransform.position, playerStartTransform.rotation);
+            playerTransform.parent = playerStartTransform;
+        }
     }
     private void OnPlayerChange(GameObject player)
     {
-       GetPlayer();
+        StartCoroutine(GetPlayer());
     } 
 }

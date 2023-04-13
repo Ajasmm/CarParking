@@ -2,6 +2,7 @@ using Ajas.Vehicle;
 using Ajas.FrameWork;
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class UI_VehicleMeter : MonoBehaviour
 {
@@ -15,11 +16,11 @@ public class UI_VehicleMeter : MonoBehaviour
 
     private void Start()
     {
-        GetPlayer();
+       StartCoroutine(GetPlayer());
     }
-    private async void GetPlayer()
+    private IEnumerator GetPlayer()
     {
-        await GameManager.Instance.WaitForPlayer();
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
         playerVehicle = GameManager.Instance.player.GetComponent<Vehicle>();
     }
 

@@ -15,7 +15,7 @@ public class GPM_LevelOne : GamePlayMode
         DisableUI();
         parkingLot.Reset();
 
-        GetPlayer();
+        StartCoroutine(GetPlayer());
     }
     public override void OnPlay()
     {
@@ -24,11 +24,12 @@ public class GPM_LevelOne : GamePlayMode
 
         player.SetActive(true);
         input.GamePlay.Enable();
+        DisableUI();
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
 
-        DisableUI();
         player.SetActive(true);
-        player.GetComponent<Driver_Player>().SetSoundToHigh();
+        player.GetComponent<Driver_Player>().ResetPlayer();
+        GameManager.Instance.SetVehicleSoundToHigh();
     }
 
     public override void OnPause()
@@ -42,7 +43,7 @@ public class GPM_LevelOne : GamePlayMode
 
         if (gamePlay_UI) gamePlay_UI.SetActive(false);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
-        player.GetComponent<Driver_Player>().SetSoundToLow();
+        GameManager.Instance.SetVehicleSoundToLow();
     }
 
     public override void OnResume()
@@ -56,7 +57,7 @@ public class GPM_LevelOne : GamePlayMode
 
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
         if (pauseMenu_UI) pauseMenu_UI.SetActive(false);
-        player.GetComponent<Driver_Player>().SetSoundToHigh();
+        GameManager.Instance.SetVehicleSoundToHigh();
     }
 
     public override void Won()
@@ -78,17 +79,16 @@ public class GPM_LevelOne : GamePlayMode
         input?.GamePlay.Disable();
         input?.Menu.Enable();
 
-        DisableUI();
-        if (player) player.GetComponent<Driver_Player>().SetSoundToLow();
+        GameManager.Instance.SetVehicleSoundToLow();
     }
 
     private void EscapeMenu(InputAction.CallbackContext context)
     {
         OnPause();
     }
-    private async void GetPlayer()
+    private IEnumerator GetPlayer()
     {
-        await GameManager.Instance.WaitForPlayer();
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
 
         if(playerStartPos) player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
