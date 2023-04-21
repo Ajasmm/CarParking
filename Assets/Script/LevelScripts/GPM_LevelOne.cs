@@ -1,8 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Ajas.FrameWork;
-using System;
 using UnityEngine.InputSystem;
 
 public class GPM_LevelOne : GamePlayMode

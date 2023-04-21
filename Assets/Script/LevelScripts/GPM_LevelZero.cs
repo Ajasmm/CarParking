@@ -19,6 +19,7 @@ public class GPM_LevelZero : GamePlayMode
     {
         isPlaying = false;
         Time.timeScale = 0f;
+
         input.Disable();
         input.Menu.Enable();
 
@@ -38,18 +39,21 @@ public class GPM_LevelZero : GamePlayMode
 
         DisableUI();
         if(gamePlay_UI) gamePlay_UI.SetActive(true);
+
         GameManager.Instance.SetVehicleSoundToHigh();
+
         input.GamePlay.Escape.performed += OnEscape;
+        
         if (director) Destroy(director.gameObject);
 
         player.GetComponent<Driver_Player>().ResetPlayer();
-
     }
 
     public override void OnResume()
     {
         isPlaying = true;
         Time.timeScale = 1F;
+
         input.Disable();
         input.GamePlay.Enable();
 
@@ -72,8 +76,10 @@ public class GPM_LevelZero : GamePlayMode
     {
         Time.timeScale = 1;
         isPlaying = false;
+
         input.GamePlay.Disable();
         input.Menu.Enable();
+
         input.GamePlay.Escape.performed -= OnEscape;
         GameManager.Instance.SetVehicleSoundToLow();
     }
