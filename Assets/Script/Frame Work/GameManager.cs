@@ -68,6 +68,9 @@ namespace Ajas.FrameWork
                 input = new MyInput();
                 input.Disable();
                 DontDestroyOnLoad(gameObject);
+
+                Application.targetFrameRate = 30;
+                Screen.sleepTimeout = SleepTimeout.NeverSleep;
             } else if (instatnce != this) Destroy(gameObject);
 
             StartCoroutine(GetAudioMixer());

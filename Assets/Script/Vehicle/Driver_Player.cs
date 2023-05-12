@@ -5,6 +5,7 @@ using Cinemachine;
 using Ajas.FrameWork;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Reflection;
 
 [RequireComponent(typeof(Vehicle))]
 public class Driver_Player : MonoBehaviour
@@ -90,7 +91,11 @@ public class Driver_Player : MonoBehaviour
         float deltaTime = Time.deltaTime;
         if (input.GamePlay.enabled)
         {
+#if UNITY_ANDROID
+            wheelSteering = rawSteeringInput;
+#else
             wheelSteering = Mathf.Lerp(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime);
+#endif       
             pedalAcceleration = rawAccelrationInput;
         }
         else
@@ -190,9 +195,10 @@ public class Driver_Player : MonoBehaviour
 
     public void ResetPlayer()
     {
-        InputAction.CallbackContext callbackContext = new InputAction.CallbackContext();
-        Drive(callbackContext);
-        if (currentCamera != 0) SwitchCamera(callbackContext);
+        // Do the task here
+        sadgfsdgfsdfsd
+
+        if (currentCamera != 0) SwitchCamera(new InputAction.CallbackContext());
     }
 
     private void OnDestroy()
