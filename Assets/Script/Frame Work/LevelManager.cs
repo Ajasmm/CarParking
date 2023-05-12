@@ -1,5 +1,9 @@
 using System.Collections;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -25,10 +29,10 @@ namespace Ajas.FrameWork
 
         private void OnEnable()
         {
-            RegisterGameMode();
+            StartCoroutine(RegisterGameMode());
         }
 
-        private async void RegisterGameMode()
+        private IEnumerator RegisterGameMode()
         {
             StartCoroutine(DoTransitionEffect());
 
@@ -39,9 +43,22 @@ namespace Ajas.FrameWork
                 Resources.UnloadUnusedAssets();
             }
             int currentLevel = GameManager.Instance.CurrentLevel;
-            string levelName = "Levels/Level_" + currentLevel.ToString();
+            string levelName = "Assets/Levels/Level_" + currentLevel.ToString() + ".prefab";
 
-            GameObject currentLevelPrefab = Resources.Load(levelName) as GameObject;
+            GameObject currentLevelPrefab;
+            AsyncOperationHandle<GameObject> asyncOperation = Addressables.LoadAssetAsync<GameObject>(levelName);
+
+            while (!asyncOperation.IsDone)
+            {
+                yield return null;
+            }
+
+            if(asyncOperation.Status == AsyncOperationStatus.Failed) { 
+                Debug.LogWarning("Loading level failed " + levelName);
+                yield break;
+            }
+            currentLevelPrefab = asyncOperation.Result;
+
             if(currentLevelPrefab == null) Debug.Log(levelName + " Prefab is null");
             currentLevelPrefab = Instantiate(currentLevelPrefab, parkingArea, false);
             currentLevelPrefab.transform.localPosition = Vector3.zero;
@@ -56,27 +73,26 @@ namespace Ajas.FrameWork
             if (gamePlayMode == null)
             {
                 Debug.LogWarning("There is no gamemode. What you thinking. Am I a fool to you.");
-                return;
+                yield break;
             }
 
-            await GameManager.Instance.WaitForPlayer();
-
+            yield return GameManager.Instance.WaitForPlayerEnumerator();
             GameManager.Instance.CurrentGamePlayMode = gamePlayMode;
         }
 
         public void RestartLevel()
         {
-            GameManager.Instance.CurrentGamePlayMode.OnStop();
-            GameManager.Instance.CurrentGamePlayMode.OnStart();
+            GameManager.Instance.CurrentGamePlayMode?.OnStop();
+            GameManager.Instance.CurrentGamePlayMode?.OnStart();
         }
         public void NextLevel()
         {
             GameManager.Instance.CurrentLevel = GameManager.Instance.CurrentLevel + 1;
-            RegisterGameMode();
+            StartCoroutine(RegisterGameMode());
         }
         public void MainMenu()
         {
-            SceneManager.LoadSceneAsync(0);
+            SceneManager.LoadSceneAsync(1);
         }
 
         IEnumerator DoTransitionEffect()

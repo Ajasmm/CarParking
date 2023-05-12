@@ -1,8 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using System.IO;
 using System;
+using UnityEngine.Audio;
+using System.Collections;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace Ajas.FrameWork
 {
@@ -49,6 +52,12 @@ namespace Ajas.FrameWork
         private static bool isGameEnded = false;
         private static GameManager instatnce;
 
+        private AudioMixer audioMixer;
+
+
+        string userKey = "Userdata";
+
+        private float saveInterval;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
         public void Awake()
@@ -59,9 +68,34 @@ namespace Ajas.FrameWork
                 input = new MyInput();
                 input.Disable();
                 DontDestroyOnLoad(gameObject);
+
+                Application.targetFrameRate = 30;
+                Screen.sleepTimeout = SleepTimeout.NeverSleep;
             } else if (instatnce != this) Destroy(gameObject);
 
+            StartCoroutine(GetAudioMixer());
             ReadPlayerData();
+        }
+        private void Update()
+        {
+            saveInterval += Time.unscaledDeltaTime;
+            if (saveInterval > 2)
+            {
+                WritePlayerData();
+                saveInterval = 0;
+            }
+
+
+        }
+        private IEnumerator GetAudioMixer()
+        {
+            string path = "Assets/Audio/GlobalAudioMixer.mixer";
+            AsyncOperationHandle<AudioMixer> asyncOperation = Addressables.LoadAssetAsync<AudioMixer>(path);
+            while(!asyncOperation.IsDone && asyncOperation.Status != AsyncOperationStatus.Failed)
+            {
+                yield return null;
+            }
+            audioMixer = asyncOperation.Result;
         }
 
         public void RegisterPlayer(GameObject player)
@@ -83,34 +117,36 @@ namespace Ajas.FrameWork
         {
             Task task = new Task(() =>
             {
-
-                Debug.Log("Task started : with " + isPlayerAvailable + " State"); 
                 while (!isPlayerAvailable)
                 {
                     if (cancellationTokenSource.Token.IsCancellationRequested) return;
-                    Debug.Log("Player is not registered!");
                 }
             }, cancellationTokenSource.Token);
 
             task.Start();
             return task;
         }
+        public IEnumerator WaitForPlayerEnumerator()
+        {
+            while (!isPlayerAvailable)
+            {
+                yield return null;
+            }
+        }
 
         private void RegisterGameMode(GamePlayMode gameMode)
         {
             currentGamePlayMode?.OnStop();
-            gameMode.OnStart();
+            if(gameMode) gameMode.OnStart();
             currentGamePlayMode = gameMode;
         }
 
         public void GameWon()
         {
-            Debug.Log("You Won the Game :)");
             currentGamePlayMode?.Won();
         }
         public void GameLost()
         {
-            Debug.Log("You Lost the Game :(");
             currentGamePlayMode?.Failed();
         }
 
@@ -118,12 +154,10 @@ namespace Ajas.FrameWork
         public void ReadPlayerData()
         {
             playerData = new PlayerData(0);
-            string filePath = Application.persistentDataPath + "/PlayerData.json";
-            Debug.Log(filePath);
 
-            if (File.Exists(filePath))
+            if (PlayerPrefs.HasKey(userKey))
             {
-                string jsonData = File.ReadAllText(filePath);
+                string jsonData = PlayerPrefs.GetString(userKey);
                 playerData = JsonUtility.FromJson<PlayerData>(jsonData);
             }
         }
@@ -134,7 +168,8 @@ namespace Ajas.FrameWork
                 playerData.highestLevelReached = currentLevel;
 
             string jsonData = JsonUtility.ToJson(playerData, true);
-            File.WriteAllText(Application.persistentDataPath + "/PlayerData.json", jsonData);
+            PlayerPrefs.SetString(userKey, jsonData);
+            PlayerPrefs.Save();
         }
 
         public void UpdatePlayer()
@@ -145,7 +180,7 @@ namespace Ajas.FrameWork
                 player = null;
                 Destroy(tempObj);
             }
-            LoadPlayerFromFile();
+            StartCoroutine(LoadPlayerFromFile());
         }
         public void UpdatePlayer(string vehicleName)
         {
@@ -156,39 +191,64 @@ namespace Ajas.FrameWork
                 player = null;
                 Destroy(tempObj);
             }
-            LoadPlayerFromFile();
+            StartCoroutine(LoadPlayerFromFile());
         }
         public void LoadPlayer()
         {
             if (player != null) return;
-            LoadPlayerFromFile();
+            StartCoroutine(LoadPlayerFromFile());
         }
 
-        private void LoadPlayerFromFile()
+        private IEnumerator LoadPlayerFromFile()
         {
-            string path = "Player/" + playerData.vehicleName;
-            Debug.Log(path);
-            GameObject playerObj = Resources.Load(path) as GameObject;
+            string path = "Assets/Player/" + playerData.vehicleName + ".prefab";
+            GameObject playerObj;
+
+            AsyncOperationHandle<GameObject> asyncOperation = Addressables.LoadAssetAsync<GameObject>(path);
+            while(!asyncOperation.IsDone)
+            {
+                if(asyncOperation.Status == AsyncOperationStatus.Failed)
+                {
+                    Debug.Log("Error while loading player from file.");
+                    yield break;
+                }
+                yield return null;
+            }
+
+            playerObj = asyncOperation.Result;
+
             if (playerObj == null)
             {
                 playerData.vehicleName = "Car_1_Player";
-                path = path = "Player/" + playerData.vehicleName;
-                playerObj = Resources.Load(path) as GameObject;
-                Debug.Log(path + " " + playerObj.name);
+                path = path = "Assets/Player/" + playerData.vehicleName + ".prefab";
+                
+                asyncOperation = Addressables.LoadAssetAsync<GameObject>(path);
+                while (!asyncOperation.IsDone)
+                {
+                    if (asyncOperation.Status == AsyncOperationStatus.Failed)
+                    {
+                        Debug.Log("Error while loading player from file.");
+                        yield break;
+                    }
+                    yield return null;
+                }
             }
+            
+            playerObj = asyncOperation.Result;
+
             playerObj = Instantiate<GameObject>(playerObj);
             playerObj.SetActive(true);
 
-            ChangePlayerMaterialAsync(PlayerData.vehicleColor);
+            StartCoroutine(ChangePlayerMaterialAsync(PlayerData.vehicleColor));
         }
-        public void ChangePlayerMaterial(PlayerData.VehicleColor vehicleColor)
+        public IEnumerator ChangePlayerMaterial(PlayerData.VehicleColor vehicleColor)
         {
             playerData.vehicleColor = vehicleColor;
 
             GameObject player = GameManager.Instance.player;
 
             Material mat;
-            string path = "Player/Materials/";
+            string path = "Assets/Player/Materials/";
             string materialName = "";
 
             switch (vehicleColor)
@@ -212,28 +272,62 @@ namespace Ajas.FrameWork
                     materialName = "Car_Paint_Silver";
                     break;
             }
-            path += materialName;
-            mat = Resources.Load<Material>(path) as Material;
+            path += materialName + ".mat";
+            AsyncOperationHandle<Material> asyncOperation = Addressables.LoadAssetAsync<Material>(path);
 
-            if (player == null) return;
+            while(!asyncOperation.IsDone && asyncOperation.Status != AsyncOperationStatus.Failed)
+            {
+                yield return null;
+            }
+            mat = asyncOperation.Result;
+
+            if (player == null) yield break;
 
             PaintChanger paintChanger = player.GetComponent<PaintChanger>();
-            if (paintChanger == null) return;
+            if (paintChanger == null) yield break;
 
             paintChanger.ChangePaint(mat);
         }
-        public async void ChangePlayerMaterialAsync(PlayerData.VehicleColor vehicleColor)
+        public IEnumerator ChangePlayerMaterialAsync(PlayerData.VehicleColor vehicleColor)
         {
-            await WaitForPlayer();
-            ChangePlayerMaterial(vehicleColor);
+            yield return WaitForPlayerEnumerator();
+            StartCoroutine(ChangePlayerMaterial(vehicleColor));
         }
+
+        public void SetVehicleSoundToLow()
+        {
+            SetAudioMixerParameter("Vehicle Volume", -80);
+        }
+        public void SetVehicleSoundToHigh()
+        {
+            SetAudioMixerParameter("Vehicle Volume", 0);
+        }
+
+        public void SetMenuSoundToLow()
+        {
+            SetAudioMixerParameter("Menu Volume", -80);
+        }
+        public void SetMenuSoundToHigh()
+        {
+            SetAudioMixerParameter("Menu Volume", 0);
+        }
+        private bool SetAudioMixerParameter(string parameter, float value)
+        {
+            bool state = audioMixer.SetFloat(parameter, value);
+            return state;
+        }
+
 
         private void OnDestroy()
         {
             if (instatnce == this) isGameEnded = true;
             cancellationTokenSource.Cancel();
             WritePlayerData();
+            SetVehicleSoundToLow();
+            SetMenuSoundToLow();
         }
+
+        
     }
 }
 [System.Serializable]

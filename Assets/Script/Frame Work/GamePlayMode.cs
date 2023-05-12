@@ -13,10 +13,10 @@ namespace Ajas.FrameWork
         [SerializeField] public bool isLastLvel = false;
 
         [Header("UI")]
-        [SerializeField] protected GameObject gamePlay_UI; 
-        [SerializeField] protected GameObject pauseMenu_UI;
-        [SerializeField] protected GameObject win_UI;
-        [SerializeField] protected GameObject fail_UI;
+        protected GameObject gamePlay_UI; 
+        protected GameObject pauseMenu_UI;
+        protected GameObject win_UI;
+        protected GameObject fail_UI;
 
         protected GameObject player;
         protected MyInput input;

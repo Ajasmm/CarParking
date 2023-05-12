@@ -156,6 +156,17 @@
                 },
                 {
                     "name": "",
+                    "id": "03dc729c-85b0-43d8-8764-942ac8a15c9c",
+                    "path": "<Gamepad>/rightStick/x",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Steering",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "e0cf935f-7ca9-4412-a46b-545bfb10d3da",
                     "path": "<Keyboard>/w",
                     "interactions": "",

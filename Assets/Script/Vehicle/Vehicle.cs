@@ -125,18 +125,19 @@ namespace Ajas.Vehicle
             this.acceleration = acceleration;
             this.braking = pedalBrake;
             this.handbraking = handBrake;
-
+/*
             bool negativeSteering = (this.steering < 0) ? true : false;
             float steering;
 
-            steering = (Mathf.Lerp(0.1F, 1, (50 - speed) / 50));
+            steering = (Mathf.Lerp(0.1F, 1, (70 - speed) / 70));
             if (Mathf.Abs(this.steering) > steering)
                 this.steering = (negativeSteering) ? steering * -1 : steering;
-
-
+*/
         }
         public int GetSpeed() { return (int) speed; }
         public int GetEngineRPM() { return rpm; }
         public string GetCurrentGear() { return currentGear; }  
+        public DriveMode GetCurrentDriveMode() { return gearBox.driveMode; }
+        public bool GetHandBrake() { return (handbraking == 0) ? false : true; }
     }
 }

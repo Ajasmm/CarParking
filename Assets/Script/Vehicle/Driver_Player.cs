@@ -1,20 +1,17 @@
 using UnityEngine;
 using Ajas.Vehicle;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Diagnostics;
 using Cinemachine;
 using Ajas.FrameWork;
 using UnityEngine.InputSystem;
-using UnityEngine.Audio;
 using System.Collections;
+using System.Reflection;
 
 [RequireComponent(typeof(Vehicle))]
 public class Driver_Player : MonoBehaviour
 {
     [Header("Vehicle Parameter")]
     [SerializeField] float steeringSencitivity = 1;
-    [SerializeField] AudioMixer audioMixer;
 
     [Header("Cameras")]
     [SerializeField] CinemachineVirtualCamera[] cameras;
@@ -94,7 +91,11 @@ public class Driver_Player : MonoBehaviour
         float deltaTime = Time.deltaTime;
         if (input.GamePlay.enabled)
         {
+#if UNITY_ANDROID
+            wheelSteering = rawSteeringInput;
+#else
             wheelSteering = Mathf.Lerp(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime);
+#endif       
             pedalAcceleration = rawAccelrationInput;
         }
         else
@@ -192,50 +193,22 @@ public class Driver_Player : MonoBehaviour
         handBrake = (handBrake != 0) ? 0 : 1;
     }
 
+    public void ResetPlayer()
+    {
+        // Do the task here
+        sadgfsdgfsdfsd
+
+        if (currentCamera != 0) SwitchCamera(new InputAction.CallbackContext());
+    }
+
     private void OnDestroy()
     {
         cancellationTokenSource.Cancel();
-        GameManager.Instance.UnRegisterPlayer(this.gameObject);
-        UnityEngine.Debug.Log("I am Destroyed : " + this.gameObject.name);
+        GameManager.Instance?.UnRegisterPlayer(this.gameObject);
     }
     private void OnCollisionEnter(Collision collision)
     {
         if (GameManager.Instance.CurrentGamePlayMode != null && GameManager.Instance.CurrentGamePlayMode.isPlaying)
             GameManager.Instance.CurrentGamePlayMode.Failed();
-    }
-
-    public void SetSoundToLow()
-    {
-        if(this.gameObject.activeSelf)
-        StartCoroutine(SetSoundToLowCoroutine());
-    }
-    public void SetSoundToHigh()
-    {
-        if (this.gameObject.activeSelf)
-            StartCoroutine(SetSoundToHighCoroutine());
-    }
-    private IEnumerator SetSoundToHighCoroutine()
-    {
-        float volume;
-        audioMixer.GetFloat("Vehicle Volume", out volume);
-        while (volume < 0)
-        {
-            volume += Time.unscaledDeltaTime * 80 * 2;
-            if (volume > 0) volume = 0;
-            audioMixer.SetFloat("Vehicle Volume", volume);
-            yield return null;
-        }
-    }
-    private IEnumerator SetSoundToLowCoroutine()
-    {
-        float volume;
-        audioMixer.GetFloat("Vehicle Volume", out volume);
-        while (volume > -80)
-        {
-            volume -= Time.unscaledDeltaTime * 80 * 2;
-            if (volume < -80) volume = -80;
-            audioMixer.SetFloat("Vehicle Volume", volume);
-            yield return null;
-        }
     }
 }

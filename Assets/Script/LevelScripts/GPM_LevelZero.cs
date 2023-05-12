@@ -19,13 +19,14 @@ public class GPM_LevelZero : GamePlayMode
     {
         isPlaying = false;
         Time.timeScale = 0f;
+
         input.Disable();
         input.Menu.Enable();
 
         DisableUI();
         if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
 
-        player.GetComponent<Driver_Player>().SetSoundToLow();
+        GameManager.Instance.SetVehicleSoundToLow();
     }
 
     public override void OnPlay()
@@ -33,26 +34,32 @@ public class GPM_LevelZero : GamePlayMode
         isPlaying = true;
         Time.timeScale = 1;
 
-        Destroy(director.gameObject);
         input.GamePlay.Enable();
         navigator.SetActive(true);
 
         DisableUI();
         if(gamePlay_UI) gamePlay_UI.SetActive(true);
-        player.GetComponent<Driver_Player>().SetSoundToHigh();
+
+        GameManager.Instance.SetVehicleSoundToHigh();
+
         input.GamePlay.Escape.performed += OnEscape;
+        
+        if (director) Destroy(director.gameObject);
+
+        player.GetComponent<Driver_Player>().ResetPlayer();
     }
 
     public override void OnResume()
     {
         isPlaying = true;
         Time.timeScale = 1F;
+
         input.Disable();
         input.GamePlay.Enable();
 
         DisableUI();
         if (gamePlay_UI) gamePlay_UI.SetActive(true);
-        player.GetComponent<Driver_Player>().SetSoundToHigh();
+        GameManager.Instance.SetVehicleSoundToHigh();
     }
 
     public override void OnStart()
@@ -62,16 +69,19 @@ public class GPM_LevelZero : GamePlayMode
 
         navigator.SetActive(false);
         DisableUI();
-        GetPlayer();
+        StartCoroutine(GetPlayer());
     }
 
     public override void OnStop()
     {
+        Time.timeScale = 1;
         isPlaying = false;
+
         input.GamePlay.Disable();
         input.Menu.Enable();
+
         input.GamePlay.Escape.performed -= OnEscape;
-        if (player) player.GetComponent<Driver_Player>().SetSoundToLow();
+        GameManager.Instance.SetVehicleSoundToLow();
     }
 
     public override void Won()
@@ -81,9 +91,9 @@ public class GPM_LevelZero : GamePlayMode
         if (win_UI) win_UI.SetActive(true);
     }
 
-    private async void GetPlayer()
+    private IEnumerator GetPlayer()
     {
-        await GameManager.Instance.WaitForPlayer();
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
 
         player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
@@ -96,20 +106,25 @@ public class GPM_LevelZero : GamePlayMode
         Time.timeScale = 1;
 
         input.TimeLine.Enable();
-        input.TimeLine.Skip.performed += Context => SkipTimeLine();
+        input.TimeLine.Skip.performed += SkipTimeLine;
 
-        director.stopped += PlayableDirector => OnTimeLineCompleted();
+        if (director)
+        {
+            director.stopped += OnTimeLineCompleted;
+            director.Play();
+        }
+        else OnTimeLineCompleted(null);
     }
-    private void OnTimeLineCompleted()
+    private void OnTimeLineCompleted(PlayableDirector director)
     {
         input.TimeLine.Disable();
-        input.TimeLine.Skip.performed -= Context => SkipTimeLine();
+        input.TimeLine.Skip.performed -= SkipTimeLine;
 
-        director.stopped -= PlayableDirector => OnTimeLineCompleted();
+        if(director) director.stopped -=  OnTimeLineCompleted;
 
         OnPlay();
     }
-    private void SkipTimeLine()
+    private void SkipTimeLine(InputAction.CallbackContext context)
     {
         director.Stop();
     }

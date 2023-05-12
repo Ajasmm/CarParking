@@ -17,7 +17,7 @@ public class Navigator : MonoBehaviour
     private void OnEnable()
     {
         agent = GetComponent<NavMeshAgent>();
-        GetPlayer();
+        StartCoroutine(GetPlayer());
     }
 
     private void Update()
@@ -35,9 +35,9 @@ public class Navigator : MonoBehaviour
         agent.SetDestination(target.position);
     }
 
-    private async void GetPlayer()
+    private IEnumerator GetPlayer()
     {
-        await GameManager.Instance.WaitForPlayer();
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player.GetComponent<Transform>();
     }
 }
