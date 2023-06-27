@@ -1,8 +1,6 @@
 using Ajas.FrameWork;
 using Ajas.Vehicle;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -39,7 +37,7 @@ public class HandBrake : MonoBehaviour
         
         SetHandBrake(gameManager.player.GetComponent<Vehicle>().GetHandBrake());
     }
-    private void SetHandBrake(bool state)
+    public void SetHandBrake(bool state)
     {
         handBrake = state;
         if (state) handBrake_Img.sprite = handBrake_ON;

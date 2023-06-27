@@ -196,7 +196,6 @@ public class Driver_Player : MonoBehaviour
     public void ResetPlayer()
     {
         // Do the task here
-        sadgfsdgfsdfsd
 
         if (currentCamera != 0) SwitchCamera(new InputAction.CallbackContext());
     }

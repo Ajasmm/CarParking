@@ -44,6 +44,8 @@ namespace Ajas.FrameWork
             this.pauseMenu_UI = pauseMenu_UI;
             this.win_UI = win_UI;
             this.fail_UI = fail_UI;
+
+            gamePlay_UI.GetComponentInChildren<HandBrake>().SetHandBrake(true);
         }
         protected void DisableUI()
         {

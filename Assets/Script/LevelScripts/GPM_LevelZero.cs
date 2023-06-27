@@ -82,6 +82,7 @@ public class GPM_LevelZero : GamePlayMode
 
         input.GamePlay.Escape.performed -= OnEscape;
         GameManager.Instance.SetVehicleSoundToLow();
+        gamePlay_UI.GetComponentInChildren<HandBrake>().SetHandBrake(true);
     }
 
     public override void Won()

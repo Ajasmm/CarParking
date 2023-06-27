@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -59,7 +57,9 @@ namespace Ajas.FrameWork
             }
             currentLevelPrefab = asyncOperation.Result;
 
-            if(currentLevelPrefab == null) Debug.Log(levelName + " Prefab is null");
+            if(currentLevelPrefab == null)
+                Debug.Log(levelName + " Prefab is null");
+
             currentLevelPrefab = Instantiate(currentLevelPrefab, parkingArea, false);
             currentLevelPrefab.transform.localPosition = Vector3.zero;
 
@@ -78,6 +78,7 @@ namespace Ajas.FrameWork
 
             yield return GameManager.Instance.WaitForPlayerEnumerator();
             GameManager.Instance.CurrentGamePlayMode = gamePlayMode;
+            gamePlay_UI.GetComponent<HandBrake>()?.SetHandBrake(true);
         }
 
         public void RestartLevel()
