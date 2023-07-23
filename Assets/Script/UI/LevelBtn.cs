@@ -14,6 +14,15 @@ public class LevelBtn : MonoBehaviour
     private void Start()
     {
         button.onClick.AddListener(() => { if(OnButtonClick != null) OnButtonClick(); });
+        CanvasScaler canvasScaler = GetComponentInParent<CanvasScaler>();
+        float xScale = Screen.width / canvasScaler.referenceResolution.x;
+        float yScale = Screen.height / canvasScaler.referenceResolution.y;
+
+        RectTransform rectTransform = GetComponent<RectTransform>();
+        Vector3 localScale = rectTransform.localScale;
+        localScale.x *= xScale;
+        localScale.y *= yScale;
+        rectTransform.localScale = localScale;
     }
 
     public void SetText(string text)

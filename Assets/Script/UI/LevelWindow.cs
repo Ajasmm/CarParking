@@ -16,7 +16,8 @@ public class LevelWindow : MonoBehaviour
     }
     private void OnDisable()
     {
-        GameManager.Instance.input.Menu.Escape.performed -= OnEscape;
+        if (GameManager.Instance)
+            GameManager.Instance.input.Menu.Escape.performed -= OnEscape;
     }
     private void OnEscape(InputAction.CallbackContext context)
     {
