@@ -1,11 +1,34 @@
-using System.Collections;
-using System.Collections.Generic;
+using Ajas.FrameWork;
 using UnityEngine;
 
 public class AndroidController : MonoBehaviour
 {
+    [SerializeField] GameObject Button_Controller;
+    [SerializeField] GameObject Wheel_Controller;
+
     private void OnEnable()
     {
-        if(Application.platform != RuntimePlatform.Android) this.gameObject.SetActive(false);
+        Button_Controller.SetActive(false);
+        Wheel_Controller.SetActive(false);
+
+        if (Application.platform != RuntimePlatform.Android)
+        {
+            gameObject.SetActive(false);
+            return;
+        }
+        GameManager.Instance.Access();
+        Controls.SteeringControlMode controlMode;
+        controlMode = (Controls.SteeringControlMode)PlayerPrefs.GetInt(Controls.CONTROLLER_MODE);
+
+        switch(controlMode)
+        {
+            case Controls.SteeringControlMode.Wheel:
+                Wheel_Controller.SetActive(true); 
+                break;
+            case Controls.SteeringControlMode.Button:
+                Button_Controller.SetActive(true);
+                break;
+        }
+
     }
 }

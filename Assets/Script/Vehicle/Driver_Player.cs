@@ -37,10 +37,7 @@ public class Driver_Player : MonoBehaviour
     private void Start()
     {
         if (GameManager.Instance.player != null && GameManager.Instance.player != this.gameObject)
-        {
             Destroy(this.gameObject);
-            return;
-        }
         else GameManager.Instance.RegisterPlayer(this.gameObject);
 
         vehicle.gearBox.Initilize();
@@ -91,19 +88,20 @@ public class Driver_Player : MonoBehaviour
         if (input.GamePlay.enabled)
         {
 #if UNITY_ANDROID
-            wheelSteering = rawSteeringInput;
+            wheelSteering = ((Controls.SteeringControlMode) PlayerPrefs.GetInt(Controls.CONTROLLER_MODE)) == Controls.SteeringControlMode.Wheel ? 
+                rawSteeringInput : 
+                Mathf.MoveTowards(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime * 2);
 #else
-            wheelSteering = Mathf.Lerp(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime);
+            wheelSteering = Mathf.MoveTowards(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime * 2);
 #endif       
             pedalAcceleration = rawAccelrationInput;
         }
         else
         {
             wheelSteering = pedalAcceleration = 0;
-            handBrake = 1;
         }
 
-        acceleration = Mathf.Lerp(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration,deltaTime * 5);
+        acceleration = Mathf.MoveTowards(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration, deltaTime * 5);
 
         vehicle.UpdateParameter(wheelSteering, acceleration, pedalBrake, handBrake);
     }
@@ -189,14 +187,15 @@ public class Driver_Player : MonoBehaviour
     }
     private void HandBrake(InputAction.CallbackContext context)
     {
-        handBrake = (handBrake != 0) ? 0 : 1;
+        handBrake = (handBrake == 0) ? 1 : 0;
     }
 
     public void ResetPlayer()
     {
         // Do the task here
-
-        if (currentCamera != 0) SwitchCamera(new InputAction.CallbackContext());
+        handBrake = 1;
+        if (currentCamera != 0)
+            SwitchCamera(new InputAction.CallbackContext());
     }
 
     private void OnDestroy()

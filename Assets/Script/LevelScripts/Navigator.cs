@@ -1,6 +1,5 @@
 using Ajas.FrameWork;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -31,13 +30,14 @@ public class Navigator : MonoBehaviour
             agent.ResetPath();
         }
 
-        agent.nextPosition = player.TransformPoint(Vector3.forward);
         agent.SetDestination(target.position);
+        agent.nextPosition = player.TransformPoint(Vector3.forward);
     }
 
     private IEnumerator GetPlayer()
     {
         yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player.GetComponent<Transform>();
+        agent.nextPosition = player.TransformPoint(Vector3.forward);
     }
 }

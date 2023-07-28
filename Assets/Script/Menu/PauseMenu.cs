@@ -28,7 +28,7 @@ public class PauseMenu : MonoBehaviour
         restart_Btn.onClick.RemoveListener(Restart);
         menu_Btn.onClick.RemoveListener(MainMenu);
 
-        input.Menu.Escape.performed += Escape;
+        input.Menu.Escape.performed -= Escape;
     }
 
     private void Resume()

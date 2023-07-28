@@ -374,6 +374,69 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: Exit
+      rect:
+        serializedVersion: 2
+        x: 2400
+        y: 400
+        width: 400
+        height: 400
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 946a6c569d59b9845acccc49ff0e7775
+      internalID: -1015844358
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Left
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 2400
+        width: 400
+        height: 400
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fbc6d5380654adc4a980ee08911ba5d5
+      internalID: 1887197136
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Right
+      rect:
+        serializedVersion: 2
+        x: 400
+        y: 2400
+        width: 400
+        height: 400
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f07eb26e181f90c4d91b70f2a96efebb
+      internalID: -1206702463
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -390,12 +453,15 @@ TextureImporter:
       Camera: 829352803
       Drive Off: -1880975482
       Drive_ON: 1028130782
+      Exit: -1015844358
       HandBrake OFF: 1881657308
       HandBrake ON: -1136148617
+      Left: 1887197136
       Nuteral_OFF: 54985134
       Nuteral_ON: -1103840597
       Reverce_OFF: -1194085977
       Reverce_ON: 346422046
+      Right: -1206702463
       Steering Wheel: 1512869017
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

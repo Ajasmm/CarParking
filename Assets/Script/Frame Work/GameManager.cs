@@ -6,6 +6,7 @@ using UnityEngine.Audio;
 using System.Collections;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using System.Collections.Generic;
 
 namespace Ajas.FrameWork
 {
@@ -28,19 +29,27 @@ namespace Ajas.FrameWork
             }
             private set { }
         }
-        public GameObject player;
+        public GameObject player { get; private set; }
         private bool isPlayerAvailable = false;
         public MyInput input;
 
         public PlayerData PlayerData { get { return playerData; } }
         private PlayerData playerData;
 
-        public int CurrentLevel {
+        Coroutine loadPlayer;
+
+        public int CurrentLevel
+        {
             get { return currentLevel; }
-            set { currentLevel = value;
-                if(currentLevel > MaxLevel) currentLevel = MaxLevel;
-                playerData.highestLevelReached = (currentLevel > playerData.highestLevelReached) ? currentLevel : playerData.highestLevelReached;
-            } }
+            set
+            {
+                currentLevel = value;
+                if (currentLevel > MaxLevel)
+                    currentLevel = 0;
+                if (currentLevel > playerData.highestLevelReached)
+                    playerData.highestLevelReached = currentLevel;
+            }
+        }
         private int currentLevel = 0;
         private int MaxLevel = 10;
 
@@ -55,7 +64,9 @@ namespace Ajas.FrameWork
         private AudioMixer audioMixer;
 
 
-        string userKey = "Userdata";
+        const string USRKEY = "Userdata";
+
+        Queue<KeyValuePair<string, float>> audioCommands = new Queue<KeyValuePair<string, float>>();
 
         private float saveInterval;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
@@ -64,18 +75,29 @@ namespace Ajas.FrameWork
         {
             if (instatnce == null)
             {
-                instatnce = this;
                 input = new MyInput();
                 input.Disable();
                 DontDestroyOnLoad(gameObject);
 
                 Application.targetFrameRate = 30;
                 Screen.sleepTimeout = SleepTimeout.NeverSleep;
-            } else if (instatnce != this) Destroy(gameObject);
+
+                instatnce = this;
+            } else if (instatnce != this) 
+                Destroy(gameObject);
 
             StartCoroutine(GetAudioMixer());
             ReadPlayerData();
+            InitializeControlMode();
         }
+
+        public void Access() { }
+        public void InitializeControlMode()
+        {
+            if (!PlayerPrefs.HasKey(Controls.CONTROLLER_MODE))
+                PlayerPrefs.SetInt(Controls.CONTROLLER_MODE, (int)Controls.SteeringControlMode.Wheel);
+        }
+
         private void Update()
         {
             saveInterval += Time.unscaledDeltaTime;
@@ -84,9 +106,8 @@ namespace Ajas.FrameWork
                 WritePlayerData();
                 saveInterval = 0;
             }
-
-
         }
+
         private IEnumerator GetAudioMixer()
         {
             string path = "Assets/Audio/GlobalAudioMixer.mixer";
@@ -96,6 +117,8 @@ namespace Ajas.FrameWork
                 yield return null;
             }
             audioMixer = asyncOperation.Result;
+            foreach(KeyValuePair<string, float> command in audioCommands)
+                audioMixer.SetFloat(command.Key, command.Value);
         }
 
         public void RegisterPlayer(GameObject player)
@@ -115,6 +138,9 @@ namespace Ajas.FrameWork
         }
         public Task WaitForPlayer()
         {
+            if (!isPlayerAvailable)
+                LoadPlayer();
+
             Task task = new Task(() =>
             {
                 while (!isPlayerAvailable)
@@ -128,16 +154,21 @@ namespace Ajas.FrameWork
         }
         public IEnumerator WaitForPlayerEnumerator()
         {
+            if (!isPlayerAvailable)
+                LoadPlayer();
+
             while (!isPlayerAvailable)
             {
                 yield return null;
             }
+            yield return null;
         }
 
         private void RegisterGameMode(GamePlayMode gameMode)
         {
             currentGamePlayMode?.OnStop();
-            if(gameMode) gameMode.OnStart();
+            if(gameMode)
+                gameMode.OnStart();
             currentGamePlayMode = gameMode;
         }
 
@@ -155,20 +186,21 @@ namespace Ajas.FrameWork
         {
             playerData = new PlayerData(0);
 
-            if (PlayerPrefs.HasKey(userKey))
+            if (PlayerPrefs.HasKey(USRKEY))
             {
-                string jsonData = PlayerPrefs.GetString(userKey);
+                string jsonData = PlayerPrefs.GetString(USRKEY);
                 playerData = JsonUtility.FromJson<PlayerData>(jsonData);
             }
         }
         public void WritePlayerData()
         {
             if(currentLevel > MaxLevel) currentLevel = MaxLevel;
+
             if (playerData.highestLevelReached < currentLevel)
                 playerData.highestLevelReached = currentLevel;
 
             string jsonData = JsonUtility.ToJson(playerData, true);
-            PlayerPrefs.SetString(userKey, jsonData);
+            PlayerPrefs.SetString(USRKEY, jsonData);
             PlayerPrefs.Save();
         }
 
@@ -195,8 +227,8 @@ namespace Ajas.FrameWork
         }
         public void LoadPlayer()
         {
-            if (player != null) return;
-            StartCoroutine(LoadPlayerFromFile());
+            if (player != null || loadPlayer != null) return;
+            loadPlayer = StartCoroutine(LoadPlayerFromFile());
         }
 
         private IEnumerator LoadPlayerFromFile()
@@ -209,7 +241,9 @@ namespace Ajas.FrameWork
             {
                 if(asyncOperation.Status == AsyncOperationStatus.Failed)
                 {
+#if UNITY_EDITOR
                     Debug.Log("Error while loading player from file.");
+#endif
                     yield break;
                 }
                 yield return null;
@@ -227,7 +261,9 @@ namespace Ajas.FrameWork
                 {
                     if (asyncOperation.Status == AsyncOperationStatus.Failed)
                     {
+#if UNITY_EDITOR
                         Debug.Log("Error while loading player from file.");
+#endif
                         yield break;
                     }
                     yield return null;
@@ -243,6 +279,7 @@ namespace Ajas.FrameWork
         }
         public IEnumerator ChangePlayerMaterial(PlayerData.VehicleColor vehicleColor)
         {
+            yield return null;
             playerData.vehicleColor = vehicleColor;
 
             GameObject player = GameManager.Instance.player;
@@ -311,12 +348,16 @@ namespace Ajas.FrameWork
         {
             SetAudioMixerParameter("Menu Volume", 0);
         }
-        private bool SetAudioMixerParameter(string parameter, float value)
+        private void SetAudioMixerParameter(string parameter, float value)
         {
-            bool state = audioMixer.SetFloat(parameter, value);
-            return state;
+            if(audioMixer == null)
+            {
+                KeyValuePair<string, float> audioCommand = new KeyValuePair<string, float>(parameter, value);
+                audioCommands.Enqueue(audioCommand);
+            }
+            else
+                audioMixer.SetFloat(parameter, value);
         }
-
 
         private void OnDestroy()
         {
@@ -326,29 +367,5 @@ namespace Ajas.FrameWork
             SetVehicleSoundToLow();
             SetMenuSoundToLow();
         }
-
-        
-    }
-}
-[System.Serializable]
-public struct PlayerData
-{
-    public int highestLevelReached;
-    public string vehicleName;
-    public VehicleColor vehicleColor;
-    public PlayerData(int defaultHighestLevel)
-    {
-        this.highestLevelReached = defaultHighestLevel;
-        vehicleName = "Car_1_Player";
-        vehicleColor = VehicleColor.Blue;
-    }
-    public enum VehicleColor
-    {
-        Blue,
-        Purple,
-        Red,
-        Green,
-        Yellow,
-        Silver
     }
 }

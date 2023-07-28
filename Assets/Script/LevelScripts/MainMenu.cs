@@ -91,7 +91,11 @@ public class MainMenu : MonoBehaviour
     {
         yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
-        
+
+        Rigidbody playerRigidBody = player.GetComponent<Rigidbody>();
+        if (playerRigidBody) 
+            playerRigidBody.velocity = Vector3.zero;
+
         Transform playerTransform = player.GetComponent<Transform>();
         
         playerTransform.parent = null;

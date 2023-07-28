@@ -37,12 +37,21 @@ public class UI_SteeringWheel : OnScreenControl, IPointerDownHandler, IPointerUp
     {
         base.OnEnable();
         myTransform = GetComponent<RectTransform>();
+
+        isPointerDown = false;
+        deltaAngle = 0;
+        angle = 0;
+        value = 0;
+    }
+    protected override void OnDisable()
+    {
+        base.OnDisable();
     }
     private void Update()
     {
         if (!isPointerDown)
         {
-            angle = Mathf.Lerp(angle, 0, (returnSpeed / maxRotation) * Time.deltaTime);
+            angle = Mathf.MoveTowards(angle, 0, returnSpeed * Time.deltaTime);
             if (Mathf.Abs(angle) < 1) angle = 0;
         }
 

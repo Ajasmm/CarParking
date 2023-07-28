@@ -16,8 +16,11 @@ public class WinScreen : MonoBehaviour
         restart_Btn.onClick.AddListener(Restart);
         mainMenu_Btn.onClick.AddListener(MainMenu);
 
-        if(isLastLevel && next_Btn != null) Destroy(next_Btn.gameObject);
-        else next_Btn.onClick.AddListener(NextLevel);
+        GamePlayMode currentGameplayMode = GameManager.Instance.CurrentGamePlayMode.GetComponent<GamePlayMode>();
+        if(currentGameplayMode != null && currentGameplayMode.isLastLvel && next_Btn != null) 
+            Destroy(next_Btn.gameObject);
+        else 
+            next_Btn.onClick.AddListener(NextLevel);
     }
     private void OnDisable()
     {

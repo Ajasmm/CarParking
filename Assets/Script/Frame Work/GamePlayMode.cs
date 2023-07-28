@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Ajas.FrameWork
@@ -29,14 +27,87 @@ namespace Ajas.FrameWork
         {
             GameManager.Instance.OnPlayerChange -= OnPlayerChange;
         }
-        public abstract void OnStart();
-        public abstract void OnStop();
-        public abstract void OnPlay();
-        public abstract void OnPause();
-        public abstract void OnResume();
-        public abstract void Won();
-        public abstract void Failed();
-        protected abstract void OnPlayerChange(GameObject player);
+
+        public virtual void OnStart()
+        {
+            input = GameManager.Instance.input;
+            input.Disable();
+            DisableUI();
+
+            player = GameManager.Instance.player;   
+            player.GetComponent<Rigidbody>().isKinematic = false;
+        }
+        public virtual void OnStop()
+        {
+            Time.timeScale = 1;
+            isPlaying = false;
+
+            player.GetComponent<Rigidbody>().isKinematic = true;
+
+            input.GamePlay.Disable();
+            input.Menu.Enable();
+
+            GameManager.Instance.SetVehicleSoundToLow();
+            if(gamePlay_UI)
+                gamePlay_UI.GetComponentInChildren<HandBrake>()?.SetHandBrake(true);
+            DisableUI();
+        }
+        public virtual void OnPlay()
+        {
+            isPlaying = true;
+            Time.timeScale = 1;
+
+            input.GamePlay.Enable();
+            DisableUI();
+
+            if (gamePlay_UI)
+            {
+                gamePlay_UI.SetActive(true);
+                gamePlay_UI.GetComponentInChildren<HandBrake>().SetHandBrake(true);
+            }
+
+            player.GetComponent<Driver_Player>().ResetPlayer();
+            GameManager.Instance.SetVehicleSoundToHigh();
+        }
+        public virtual void OnPause()
+        {
+            isPlaying = false;
+            Time.timeScale = 0f;
+
+            input.Disable();
+            input.Menu.Enable();
+
+            DisableUI();
+            if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
+
+            GameManager.Instance.SetVehicleSoundToLow();
+        }
+        public virtual void OnResume()
+        {
+            isPlaying = true;
+            Time.timeScale = 1F;
+
+            input.Disable();
+            input.GamePlay.Enable();
+
+            DisableUI();
+            if (gamePlay_UI) gamePlay_UI.SetActive(true);
+            GameManager.Instance.SetVehicleSoundToHigh();
+        }
+        public virtual void Won()
+        {
+            OnStop();
+            DisableUI();
+            if (win_UI)
+                win_UI.SetActive(true);
+        }
+        public virtual void Failed() {
+            OnStop();
+            DisableUI();
+            if (fail_UI)
+                fail_UI.SetActive(true);
+        }
+        protected virtual void OnPlayerChange(GameObject player) {}
 
         public void SetGameWindows(GameObject gamePlay_UI, GameObject pauseMenu_UI, GameObject win_UI, GameObject fail_UI)
         {

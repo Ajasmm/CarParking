@@ -36,10 +36,10 @@ namespace Ajas.FrameWork
 
             GamePlayMode existingGamePlayMode = GameManager.Instance.CurrentGamePlayMode;
             if (existingGamePlayMode != null)
-            {
                 Destroy(existingGamePlayMode.gameObject);
-                Resources.UnloadUnusedAssets();
-            }
+
+            Resources.UnloadUnusedAssets();
+            
             int currentLevel = GameManager.Instance.CurrentLevel;
             string levelName = "Assets/Levels/Level_" + currentLevel.ToString() + ".prefab";
 
@@ -51,34 +51,36 @@ namespace Ajas.FrameWork
                 yield return null;
             }
 
-            if(asyncOperation.Status == AsyncOperationStatus.Failed) { 
+            if(asyncOperation.Status == AsyncOperationStatus.Failed) {
+#if UNITY_EDITOR
                 Debug.LogWarning("Loading level failed " + levelName);
+#endif
                 yield break;
             }
             currentLevelPrefab = asyncOperation.Result;
 
+#if UNITY_EDITOR
             if(currentLevelPrefab == null)
                 Debug.Log(levelName + " Prefab is null");
+#endif
 
             currentLevelPrefab = Instantiate(currentLevelPrefab, parkingArea, false);
             currentLevelPrefab.transform.localPosition = Vector3.zero;
 
             gamePlayMode = currentLevelPrefab.GetComponent<GamePlayMode>();
-            if (gamePlayMode.isLastLvel) win_UI.GetComponent<WinScreen>().isLastLevel = true;
-            win_UI.SetActive(false);
-            win_UI.SetActive(true);
-
-            gamePlayMode.SetGameWindows(gamePlay_UI,pauseMenu_UI,win_UI,fail_UI);
 
             if (gamePlayMode == null)
             {
-                Debug.LogWarning("There is no gamemode. What you thinking. Am I a fool to you.");
+#if UNITY_EDITOR
+                Debug.LogWarning("There is no gamemode.");
+#endif
                 yield break;
             }
 
+            gamePlayMode.SetGameWindows(gamePlay_UI, pauseMenu_UI, win_UI, fail_UI);
             yield return GameManager.Instance.WaitForPlayerEnumerator();
             GameManager.Instance.CurrentGamePlayMode = gamePlayMode;
-            gamePlay_UI.GetComponent<HandBrake>()?.SetHandBrake(true);
+            // gamePlay_UI.GetComponent<HandBrake>()?.SetHandBrake(true);
         }
 
         public void RestartLevel()

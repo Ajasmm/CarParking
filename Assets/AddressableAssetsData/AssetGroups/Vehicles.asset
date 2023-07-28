@@ -21,6 +21,7 @@ MonoBehaviour:
     m_Address: Assets/Player
     m_ReadOnly: 0
     m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 42980618a88b34843b9bde9f97f3f7f5, type: 2}
   m_SchemaSet:
