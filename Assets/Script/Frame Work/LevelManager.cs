@@ -1,4 +1,5 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -27,16 +28,17 @@ namespace Ajas.FrameWork
 
         private void OnEnable()
         {
+            StartCoroutine(DoTransitionEffect());
             StartCoroutine(RegisterGameMode());
         }
 
         private IEnumerator RegisterGameMode()
         {
-            StartCoroutine(DoTransitionEffect());
-
             GamePlayMode existingGamePlayMode = GameManager.Instance.CurrentGamePlayMode;
             if (existingGamePlayMode != null)
                 Destroy(existingGamePlayMode.gameObject);
+
+            yield return null;
 
             Resources.UnloadUnusedAssets();
             
@@ -51,18 +53,11 @@ namespace Ajas.FrameWork
                 yield return null;
             }
 
-            if(asyncOperation.Status == AsyncOperationStatus.Failed) {
-#if UNITY_EDITOR
-                Debug.LogWarning("Loading level failed " + levelName);
-#endif
+            if(asyncOperation.Status == AsyncOperationStatus.Failed) 
+            {
                 yield break;
             }
             currentLevelPrefab = asyncOperation.Result;
-
-#if UNITY_EDITOR
-            if(currentLevelPrefab == null)
-                Debug.Log(levelName + " Prefab is null");
-#endif
 
             currentLevelPrefab = Instantiate(currentLevelPrefab, parkingArea, false);
             currentLevelPrefab.transform.localPosition = Vector3.zero;
@@ -71,16 +66,12 @@ namespace Ajas.FrameWork
 
             if (gamePlayMode == null)
             {
-#if UNITY_EDITOR
-                Debug.LogWarning("There is no gamemode.");
-#endif
                 yield break;
             }
 
             gamePlayMode.SetGameWindows(gamePlay_UI, pauseMenu_UI, win_UI, fail_UI);
             yield return GameManager.Instance.WaitForPlayerEnumerator();
             GameManager.Instance.CurrentGamePlayMode = gamePlayMode;
-            // gamePlay_UI.GetComponent<HandBrake>()?.SetHandBrake(true);
         }
 
         public void RestartLevel()

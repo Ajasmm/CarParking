@@ -13,23 +13,28 @@ namespace Ajas.Vehicle
         [SerializeField] private float idleRPM;
         [SerializeField] private float accelerationRPM;
 
-        float enigneRPM;
+        float engineRPM;
         float currentRPM;
         float engineTorque;
 
         public float GetEngineTorque(float gearBoxRPM, float acceleration, float clutch)
         {
-            if(gearBoxRPM < minRPM) gearBoxRPM = minRPM;
+            engineRPM = Mathf.Lerp(idleRPM, accelerationRPM, acceleration);
 
-            enigneRPM = Mathf.Lerp(idleRPM, accelerationRPM, acceleration);
-            currentRPM = Mathf.Lerp(gearBoxRPM, enigneRPM, clutch);
+            if (gearBoxRPM < minRPM)
+                gearBoxRPM = minRPM;
+            if (engineRPM < minRPM)
+                engineRPM = minRPM;
 
-            currentRPM = Mathf.Lerp(currentRPM, (currentRPM < minRPM) ? minRPM : currentRPM, 0.5F);
+            currentRPM = Mathf.Lerp(gearBoxRPM, engineRPM, clutch);
 
             engineTorque = torqueCurve.Evaluate(currentRPM) * acceleration;
             engineTorque -= oppositionTorque.Evaluate(currentRPM) * (1 - clutch) * (1 - acceleration);
             return engineTorque;
         }
-        public float GetEngineRPM() { return (currentRPM < minRPM) ? minRPM : currentRPM; }
+        public float GetEngineRPM() 
+        { 
+            return (currentRPM < minRPM) ? minRPM : currentRPM; 
+        }
     }
 }

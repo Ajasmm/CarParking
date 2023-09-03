@@ -18,8 +18,6 @@ public class Garage : MonoBehaviour
     [SerializeField] Button yellow_Color;
     [SerializeField] Button silver_Color;
 
-
-
     [SerializeField] List<string> vehicleNames;
 
     int currentVehicleIndex = 0;
@@ -35,8 +33,8 @@ public class Garage : MonoBehaviour
         next.onClick.AddListener(OnNext);
         prev.onClick.AddListener(OnPrev);
 
-        blue_Color.onClick.AddListener(()=>OnChangeMaterial(PlayerData.VehicleColor.Blue));
-        purple_Color.onClick.AddListener(()=>OnChangeMaterial(PlayerData.VehicleColor.Purple));
+        blue_Color.onClick.AddListener(() => OnChangeMaterial(PlayerData.VehicleColor.Blue));
+        purple_Color.onClick.AddListener(() => OnChangeMaterial(PlayerData.VehicleColor.Purple));
         red_Color.onClick.AddListener(() => OnChangeMaterial(PlayerData.VehicleColor.Red));
         green_Color.onClick.AddListener(() => OnChangeMaterial(PlayerData.VehicleColor.Green));
         yellow_Color.onClick.AddListener(() => OnChangeMaterial(PlayerData.VehicleColor.Yellow));
@@ -59,24 +57,28 @@ public class Garage : MonoBehaviour
     private void OnNext()
     {
         currentVehicleIndex++;
-        if (currentVehicleIndex >= vehicleNames.Count) currentVehicleIndex = 0;
+        if (currentVehicleIndex >= vehicleNames.Count)
+            currentVehicleIndex = 0;
+
         GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]);
     }
     private void OnPrev()
     {
         currentVehicleIndex--;
-        if (currentVehicleIndex < 0) currentVehicleIndex = vehicleNames.Count - 1;
+        if (currentVehicleIndex < 0)
+            currentVehicleIndex = vehicleNames.Count - 1;
+
         GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]);
     }
     private void OnEscape(InputAction.CallbackContext context)
     {
-        this.gameObject.SetActive(false);
+        gameObject.SetActive(false);
     }
 
     
     private void OnChangeMaterial(PlayerData.VehicleColor color)
     {
-        StartCoroutine(GameManager.Instance.ChangePlayerMaterial(color))    ;
+        GameManager.Instance.ChangePlayerMaterial(color);
 
     }
 }

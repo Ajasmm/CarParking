@@ -1,8 +1,6 @@
 using Ajas.FrameWork;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -25,6 +23,8 @@ public class MainMenu : MonoBehaviour
     MyInput input;
     GameObject player;
 
+    Coroutine playerWaiting_Coroutine;
+
     private void OnEnable()
     {
         input = GameManager.Instance.input;
@@ -36,15 +36,14 @@ public class MainMenu : MonoBehaviour
         if (controls_Btn) controls_Btn.onClick.AddListener(OnControls);
         if (exit_Btn) exit_Btn.onClick.AddListener(OnExit);
 
+        OnPlayerChange();
         GameManager.Instance.OnPlayerChange += OnPlayerChange;
 
-        GameManager.Instance.SetVehicleSoundToLow();
-        GameManager.Instance.SetMenuSoundToHigh();
-        GameManager.Instance.LoadPlayer();
-
+        GameManager.Instance.UpdatePlayer();
         GameManager.Instance.CurrentGamePlayMode = null;
         StartCoroutine(GetPlayer());
 
+        AudioManager.Instance?.ChangeState(AudioState.Menu, 0.5F);
     }
     private void OnDisable()
     {
@@ -54,61 +53,71 @@ public class MainMenu : MonoBehaviour
         if (exit_Btn) exit_Btn.onClick.RemoveListener(OnExit);
 
         if (player != null) player.SetActive(false);
-        if(GameManager.Instance) GameManager.Instance.OnPlayerChange -= OnPlayerChange;
-
-        if (GameManager.Instance) GameManager.Instance.SetMenuSoundToLow();
+        if(GameManager.Instance)
+            GameManager.Instance.OnPlayerChange -= OnPlayerChange;
     }
 
     private void OnPlay()
     {
         DisableAllWindows();
-        if(levelWindow) levelWindow.SetActive(true);
+        if(levelWindow)
+            levelWindow.SetActive(true);
     }
     private void OnGarage()
     {
         DisableAllWindows();
-        if(garageWindow) garageWindow.SetActive(true);
+        if(garageWindow)
+            garageWindow.SetActive(true);
     }
     private void OnControls()
     {
         DisableAllWindows();
-        if (controlsWindow) controlsWindow.SetActive(true);
+        if (controlsWindow) 
+            controlsWindow.SetActive(true);
     }
     private void OnExit()
     {
         DisableAllWindows();
-        if (exitWindow) exitWindow.SetActive(true);
+        if (exitWindow) 
+            exitWindow.SetActive(true);
     }
     private void DisableAllWindows()
     {
-        if (levelWindow) levelWindow.SetActive(false);
-        if (garageWindow) garageWindow.SetActive(false);
-        if (controlsWindow) controlsWindow.SetActive(false);
-        if (exitWindow) exitWindow.SetActive(false);
+        if (levelWindow) 
+            levelWindow.SetActive(false);
+        if (garageWindow) 
+            garageWindow.SetActive(false);
+        if (controlsWindow)
+            controlsWindow.SetActive(false);
+        if (exitWindow) 
+            exitWindow.SetActive(false);
     }
 
     private IEnumerator GetPlayer()
     {
         yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
-
-        Rigidbody playerRigidBody = player.GetComponent<Rigidbody>();
-        if (playerRigidBody) 
-            playerRigidBody.velocity = Vector3.zero;
+        player.SetActive(false);
 
         Transform playerTransform = player.GetComponent<Transform>();
-        
+        Rigidbody playerRigidBody = player.GetComponent<Rigidbody>();
+
         playerTransform.parent = null;
         SceneManager.MoveGameObjectToScene(player, this.gameObject.scene);
+        playerTransform.parent = playerStartTransform;
 
-        if (playerStartTransform)
-        {
-            playerTransform.SetPositionAndRotation(playerStartTransform.position, playerStartTransform.rotation);
-            playerTransform.parent = playerStartTransform;
-        }
+        playerTransform.localPosition = Vector3.zero;
+        playerTransform.localRotation = Quaternion.identity;
+        playerRigidBody.velocity = Vector3.zero;
+
+        player.SetActive(true);
+        playerWaiting_Coroutine = null;
     }
-    private void OnPlayerChange(GameObject player)
+    private void OnPlayerChange()
     {
-        StartCoroutine(GetPlayer());
+        if (playerWaiting_Coroutine != null)
+            return;
+
+        playerWaiting_Coroutine = StartCoroutine(GetPlayer());
     } 
 }

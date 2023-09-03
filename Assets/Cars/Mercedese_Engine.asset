@@ -17,7 +17,7 @@ MonoBehaviour:
     m_Curve:
     - serializedVersion: 3
       time: 900
-      value: 400
+      value: 200
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -26,7 +26,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 6500
-      value: 1200
+      value: 800
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -59,7 +59,7 @@ MonoBehaviour:
       outWeight: 0.33333334
     - serializedVersion: 3
       time: 6500
-      value: 1200
+      value: 800
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -70,6 +70,6 @@ MonoBehaviour:
     m_PostInfinity: 2
     m_RotationOrder: 4
   minRPM: 900
-  maxRPM: 7000
+  maxRPM: 5000
   idleRPM: 1000
-  accelerationRPM: 6000
+  accelerationRPM: 2923

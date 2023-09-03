@@ -23,27 +23,12 @@ public class UI_ProgressiveButton : OnScreenControl, IPointerDownHandler, IPoint
 
     private void Update()
     {
-        if (isPointerDown) value = MoveTowards(value, 1, 1 / duration);
-        else value = MoveTowards(value, 0, 1 / duration);
+        if (isPointerDown) 
+            value = Mathf.MoveTowards(value, 1, (1 / duration) * Time.deltaTime);
+        else 
+            value = Mathf.MoveTowards(value, 0, (1 / duration) * Time.deltaTime);
 
         SendValueToControl(value);
-
-    }
-    private float MoveTowards(float from, float to, float sensitivity)
-    {
-        if (from < to)
-        {
-            from += Time.deltaTime * sensitivity;
-            if (from >= to)
-                from = to;
-        }
-        else if (from > to)
-        {
-            from -= Time.deltaTime * sensitivity;
-            if (from <= to)
-                from = to;
-        }
-        return from;
     }
 
     public float GetValue()

@@ -34,7 +34,7 @@ namespace Ajas.FrameWork
             input.Disable();
             DisableUI();
 
-            player = GameManager.Instance.player;   
+            player = GameManager.Instance.player;
             player.GetComponent<Rigidbody>().isKinematic = false;
         }
         public virtual void OnStop()
@@ -42,15 +42,16 @@ namespace Ajas.FrameWork
             Time.timeScale = 1;
             isPlaying = false;
 
-            player.GetComponent<Rigidbody>().isKinematic = true;
+            if(player != null && player.TryGetComponent(out Rigidbody playerRigidBody))
+            {
+                playerRigidBody.isKinematic = true;
+            }
 
             input.GamePlay.Disable();
             input.Menu.Enable();
 
-            GameManager.Instance.SetVehicleSoundToLow();
             if(gamePlay_UI)
                 gamePlay_UI.GetComponentInChildren<HandBrake>()?.SetHandBrake(true);
-            DisableUI();
         }
         public virtual void OnPlay()
         {
@@ -67,7 +68,7 @@ namespace Ajas.FrameWork
             }
 
             player.GetComponent<Driver_Player>().ResetPlayer();
-            GameManager.Instance.SetVehicleSoundToHigh();
+            AudioManager.Instance.ChangeState(AudioState.Gameplay, 0.5F);
         }
         public virtual void OnPause()
         {
@@ -78,9 +79,10 @@ namespace Ajas.FrameWork
             input.Menu.Enable();
 
             DisableUI();
-            if (pauseMenu_UI) pauseMenu_UI.SetActive(true);
+            if (pauseMenu_UI)
+                pauseMenu_UI.SetActive(true);
 
-            GameManager.Instance.SetVehicleSoundToLow();
+            AudioManager.Instance.ChangeState(AudioState.Menu, 0.5F);
         }
         public virtual void OnResume()
         {
@@ -92,7 +94,7 @@ namespace Ajas.FrameWork
 
             DisableUI();
             if (gamePlay_UI) gamePlay_UI.SetActive(true);
-            GameManager.Instance.SetVehicleSoundToHigh();
+            AudioManager.Instance.ChangeState(AudioState.Gameplay, 0.5F);
         }
         public virtual void Won()
         {
@@ -107,7 +109,7 @@ namespace Ajas.FrameWork
             if (fail_UI)
                 fail_UI.SetActive(true);
         }
-        protected virtual void OnPlayerChange(GameObject player) {}
+        protected virtual void OnPlayerChange() {}
 
         public void SetGameWindows(GameObject gamePlay_UI, GameObject pauseMenu_UI, GameObject win_UI, GameObject fail_UI)
         {

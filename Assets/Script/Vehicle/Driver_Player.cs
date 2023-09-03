@@ -1,33 +1,32 @@
 using UnityEngine;
 using Ajas.Vehicle;
-using System.Threading;
 using Cinemachine;
 using Ajas.FrameWork;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEditor;
 
 [RequireComponent(typeof(Vehicle))]
 public class Driver_Player : MonoBehaviour
 {
     [Header("Vehicle Parameter")]
     [SerializeField] float steeringSencitivity = 1;
+    [SerializeField] float pedalSencitivity = 2;
 
     [Header("Cameras")]
     [SerializeField] CinemachineVirtualCamera[] cameras;
 
     int currentCamera = 0;
 
-    float rawSteeringInput, rawAccelrationInput;
-    float wheelSteering, pedalAcceleration, pedalBrake, handBrake;
-    float acceleration;
+    float rawSteeringInput, rawAccelrationInput, rawBrakeInput, rawHandbrakeInput;
 
+    float steering, acceleration, braking;
     float gearAcceleration, clutch;
 
     Vehicle vehicle;
     bool isGearChanging = false;
 
     MyInput input;
-    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private void Awake()
     {
@@ -36,31 +35,22 @@ public class Driver_Player : MonoBehaviour
 
     private void Start()
     {
-        if (GameManager.Instance.player != null && GameManager.Instance.player != this.gameObject)
-            Destroy(this.gameObject);
-        else GameManager.Instance.RegisterPlayer(this.gameObject);
-
         vehicle.gearBox.Initilize();
         foreach (CinemachineVirtualCamera vcam in cameras) vcam.m_Priority = 0;
         cameras[currentCamera].m_Priority = 10;
-        handBrake = 1;
-
-        DontDestroyOnLoad(this.gameObject);
+        rawHandbrakeInput = 1;
+        clutch = 0;
     }
 
     private void OnEnable()
     {
         input = GameManager.Instance.input;
-        input.Enable();
 
         input.GamePlay.Camera.performed += SwitchCamera;
 
         input.GamePlay.Drive.performed += Drive;
         input.GamePlay.Nuteral.performed += Nuteral;
         input.GamePlay.Reverce.performed += Reverce;
-
-        input.GamePlay.Brake.performed += Brake;
-        input.GamePlay.Brake.canceled += Brake;
 
         input.GamePlay.HandBrake.performed += HandBrake;
     }
@@ -72,9 +62,6 @@ public class Driver_Player : MonoBehaviour
         input.GamePlay.Nuteral.performed -= Nuteral;
         input.GamePlay.Reverce.performed -= Reverce;
 
-        input.GamePlay.Brake.performed -= Brake;
-        input.GamePlay.Brake.canceled -= Brake;
-
         input.GamePlay.HandBrake.performed -= HandBrake;
     }
 
@@ -82,36 +69,49 @@ public class Driver_Player : MonoBehaviour
     {
         rawSteeringInput = input.GamePlay.Steering.ReadValue<float>();
         rawAccelrationInput = input.GamePlay.Acceleration.ReadValue<float>();
+        rawBrakeInput = input.GamePlay.Brake.ReadValue<float>();
 
         // Raw Input
         float deltaTime = Time.deltaTime;
         if (input.GamePlay.enabled)
         {
-#if UNITY_ANDROID
-            wheelSteering = ((Controls.SteeringControlMode) PlayerPrefs.GetInt(Controls.CONTROLLER_MODE)) == Controls.SteeringControlMode.Wheel ? 
-                rawSteeringInput : 
-                Mathf.MoveTowards(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime * 2);
-#else
-            wheelSteering = Mathf.MoveTowards(wheelSteering, rawSteeringInput, steeringSencitivity * deltaTime * 2);
-#endif       
-            pedalAcceleration = rawAccelrationInput;
+            Controls.SteeringControlMode steeringControlMode = (Controls.SteeringControlMode) PlayerPrefs.GetInt(Controls.CONTROLLER_MODE);
+            if(steeringControlMode == Controls.SteeringControlMode.Wheel)
+            {
+                steering = rawSteeringInput;
+            }
+            else
+            {
+                steering = Mathf.MoveTowards(steering, rawSteeringInput, deltaTime * steeringSencitivity);
+            }
+
+            acceleration = Mathf.MoveTowards(acceleration, rawAccelrationInput, deltaTime * pedalSencitivity);
+            acceleration = Mathf.MoveTowards(
+                acceleration, 
+                (isGearChanging) ? gearAcceleration : rawAccelrationInput, 
+                deltaTime * 5);
+
+            braking = Mathf.MoveTowards(braking, rawBrakeInput, deltaTime * pedalSencitivity * 4);
         }
         else
         {
-            wheelSteering = pedalAcceleration = 0;
+            steering = acceleration = 0;
+            braking = 1;
         }
 
-        acceleration = Mathf.MoveTowards(acceleration, (isGearChanging) ? gearAcceleration : pedalAcceleration, deltaTime * 5);
 
-        vehicle.UpdateParameter(wheelSteering, acceleration, pedalBrake, handBrake);
+        vehicle.UpdateParameter(steering, acceleration, braking, rawHandbrakeInput, clutch);
+
+        AutoGearChange();
     }
-    private void FixedUpdate()
+    private void AutoGearChange()
     {
         // Auto Gear
         GearBox gearBox = vehicle.gearBox;
         Engine engine = vehicle.engine;
 
-        if (gearBox.driveMode != DriveMode.DRIVE) return;
+        if (gearBox.driveMode != DriveMode.DRIVE) 
+            return;
 
         Ratio currentRatio = gearBox.GetCurrentRatio();
         float currentRPM = engine.GetEngineRPM();
@@ -134,34 +134,65 @@ public class Driver_Player : MonoBehaviour
     private IEnumerator GearDown()
     {
         isGearChanging = true;
-
         gearAcceleration = 0;
-        clutch = 1;
 
-        yield return new WaitForSeconds(0.25F);
+        const float waitTime = 0.25F;
+        float tempWaitTime = waitTime;
+        while(tempWaitTime > 0)
+        {
+            float deltaTime = Time.deltaTime;
+            clutch = Mathf.MoveTowards(clutch, 1, deltaTime * (1 / waitTime));
+            tempWaitTime -= deltaTime;
+            
+            yield return null;
+        }
+        clutch = 1;
 
         vehicle.gearBox.GearDown();
 
+        tempWaitTime = waitTime;
+        while (tempWaitTime > 0)
+        {
+            float deltaTime = Time.deltaTime;
+            clutch = Mathf.MoveTowards(clutch, 0, deltaTime * (1 / waitTime));
+            tempWaitTime -= deltaTime;
+
+            yield return null;
+        }
         clutch = 0;
-        yield return new WaitForSeconds(0.25F);
-       
         isGearChanging = false;
     }
     private IEnumerator GearUp()
     {
         isGearChanging = true;
-
         gearAcceleration = 0;
-        clutch = 1;
 
-        yield return new WaitForSeconds(0.25F);
+        const float waitTime = 0.25F;
+        float tempWaitTime = waitTime;
+        while (tempWaitTime > 0)
+        {
+            float deltaTime = Time.deltaTime;
+            clutch = Mathf.MoveTowards(clutch, 1, deltaTime * (1 / waitTime));
+            tempWaitTime -= deltaTime;
+
+            yield return null;
+        }
+        clutch = 1;
 
         vehicle.gearBox.GearUp();
 
+        tempWaitTime = waitTime;
+        while (tempWaitTime > 0)
+        {
+            float deltaTime = Time.deltaTime;
+            clutch = Mathf.MoveTowards(clutch, 0, deltaTime * (1 / waitTime));
+            tempWaitTime -= deltaTime;
+
+            yield return null;
+        }
         clutch = 0;
 
-        yield return new WaitForSeconds(0.25F);
-
+        clutch = 0;
         isGearChanging = false;
     }
 
@@ -178,29 +209,21 @@ public class Driver_Player : MonoBehaviour
 
     }
 
-    private void Brake(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-            pedalBrake = 1;
-        else if (context.canceled)
-            pedalBrake = 0;
-    }
     private void HandBrake(InputAction.CallbackContext context)
     {
-        handBrake = (handBrake == 0) ? 1 : 0;
+        rawHandbrakeInput = (rawHandbrakeInput == 0) ? 1 : 0;
     }
 
     public void ResetPlayer()
     {
         // Do the task here
-        handBrake = 1;
+        rawHandbrakeInput = 1;
         if (currentCamera != 0)
             SwitchCamera(new InputAction.CallbackContext());
     }
 
     private void OnDestroy()
     {
-        cancellationTokenSource.Cancel();
         GameManager.Instance?.UnRegisterPlayer(this.gameObject);
     }
     private void OnCollisionEnter(Collision collision)

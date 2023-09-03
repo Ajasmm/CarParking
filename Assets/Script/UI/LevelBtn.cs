@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,7 +11,10 @@ public class LevelBtn : MonoBehaviour
 
     private void Start()
     {
-        button.onClick.AddListener(() => { if(OnButtonClick != null) OnButtonClick(); });
+        button.onClick.AddListener(() => {
+            OnButtonClick?.Invoke();
+        });
+
         CanvasScaler canvasScaler = GetComponentInParent<CanvasScaler>();
         float xScale = Screen.width / canvasScaler.referenceResolution.x;
         float yScale = Screen.height / canvasScaler.referenceResolution.y;

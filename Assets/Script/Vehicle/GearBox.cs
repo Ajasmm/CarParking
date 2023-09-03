@@ -87,7 +87,7 @@ namespace Ajas.Vehicle
             }
             float tempRPM;
             tempRPM = axilRPM * finalratio * currentRatio;
-            tempRPM = (Mathf.Lerp(tempRPM, 0, clutch));
+            tempRPM = (Mathf.Lerp(tempRPM, gearDownRPM, clutch));
             m_GearBoxRPM = Mathf.Lerp(m_GearBoxRPM, tempRPM, 0.5F);
             return m_GearBoxRPM;
         }

@@ -1,5 +1,6 @@
 using Ajas.FrameWork;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class ExitWindow : MonoBehaviour
@@ -9,19 +10,19 @@ public class ExitWindow : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.Instance.input.Menu.Escape.performed += Context => OnEscape();
+        GameManager.Instance.input.Menu.Escape.performed +=  OnEscape;
 
         if(exit_Btn) exit_Btn.onClick.AddListener(OnExit);
         if (cancel_Btn) cancel_Btn.onClick.AddListener(OnCancel);
     }
     private void OnDisable()
     {
-        GameManager.Instance.input.Menu.Escape.performed -= Context => OnEscape();
+        GameManager.Instance.input.Menu.Escape.performed -=  OnEscape;
 
         if (exit_Btn) exit_Btn.onClick.RemoveListener(OnExit);
         if (cancel_Btn) cancel_Btn.onClick.RemoveListener(OnCancel);
     }
-    private void OnEscape()
+    private void OnEscape(InputAction.CallbackContext context)
     {
         gameObject.SetActive(false);
     }
@@ -36,7 +37,7 @@ public class ExitWindow : MonoBehaviour
     }
     private void OnCancel()
     {
-        OnEscape();
+        OnEscape(default(InputAction.CallbackContext));
     }
 }
 

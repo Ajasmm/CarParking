@@ -12,30 +12,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbc78d41abe8c3642b623ad20df2e1a6, type: 3}
   m_Name: Mercedese_GearBox
   m_EditorClassIdentifier: 
-  finalratio: 3.64
-  reverceRatio: -3.64
+  finalratio: 7
+  reverceRatio: -4.4
   ratios:
-  - ratio: 3.18
-    gearDownSpeed: 16.935806
-    gearUpSpeed: 38.105564
-  - ratio: 2.26
-    gearDownSpeed: 23.830032
-    gearUpSpeed: 53.61757
-  - ratio: 1.68
-    gearDownSpeed: 32.057064
-    gearUpSpeed: 72.1284
-  - ratio: 1.29
-    gearDownSpeed: 41.748737
-    gearUpSpeed: 93.934654
-  - ratio: 1.06
-    gearDownSpeed: 50.807426
-    gearUpSpeed: 114.31671
-  - ratio: 0.88
-    gearDownSpeed: 61.199852
-    gearUpSpeed: 137.69968
-  - ratio: 0.8
-    gearDownSpeed: 67.31984
-    gearUpSpeed: 151.46964
+  - ratio: 4.4
+    gearDownSpeed: 6.3647847
+    gearUpSpeed: 14.3207655
+  - ratio: 3
+    gearDownSpeed: 9.335018
+    gearUpSpeed: 21.00379
+  - ratio: 1.7
+    gearDownSpeed: 16.47356
+    gearUpSpeed: 37.065514
+  - ratio: 1
+    gearDownSpeed: 28.005053
+    gearUpSpeed: 63.011364
+  - ratio: 0.7
+    gearDownSpeed: 4.0007215
+    gearUpSpeed: 9.001624
   tyreRadius: 0.26
   gearUpRPM: 4500
   gearDownRPM: 2000

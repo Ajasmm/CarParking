@@ -8,11 +8,15 @@ public class GPM_LevelOne : GamePlayMode
     public override void OnStart()
     {
         base.OnStart();
-
         input.GamePlay.Escape.performed += EscapeMenu;
         parkingLot.Reset();
 
         StartCoroutine(GetPlayer());
+    }
+    public override void OnStop()
+    {
+        base.OnStop();
+        input.GamePlay.Escape.performed -= EscapeMenu;
     }
     public override void OnPlay()
     {
@@ -29,7 +33,9 @@ public class GPM_LevelOne : GamePlayMode
         yield return GameManager.Instance.WaitForPlayerEnumerator();
         player = GameManager.Instance.player;
 
-        if(playerStartPos) player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
+        if(playerStartPos)
+            player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
+
         Time.timeScale = 1F;
         OnPlay();
     }
@@ -39,9 +45,9 @@ public class GPM_LevelOne : GamePlayMode
         OnStop();
     }
 
-    protected override void OnPlayerChange(GameObject player)
+    protected override void OnPlayerChange()
     {
-        this.player = player;
+        this.player = GameManager.Instance.player;
         player.transform.SetPositionAndRotation(playerStartPos.position, playerStartPos.rotation);
     }
 }

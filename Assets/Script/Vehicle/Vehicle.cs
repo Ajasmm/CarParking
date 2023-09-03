@@ -1,8 +1,4 @@
-using Ajas.FrameWork;
-using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Audio;
 
 namespace Ajas.Vehicle
 {
@@ -49,9 +45,8 @@ namespace Ajas.Vehicle
         float m_GearBoxRPM;
         float m_EngineTorque;
         float m_GearBoxTorque;
-        float m_MotorTorque;
 
-        int rpm;
+        int  rpm;
         string currentGear;
 
 
@@ -62,15 +57,25 @@ namespace Ajas.Vehicle
 
             m_RigidBody.centerOfMass = Vector3.up * 0.2F;
         }
+        private void Start()
+        {
+            WheelCollider wheelcollider = gameObject.GetComponentInChildren<WheelCollider>();
+            wheelcollider.ConfigureVehicleSubsteps(5.5F, 15, 30);
+        }
         private void Update()
         {
 
-            rpm = (int)engine.GetEngineRPM();
+            rpm = (int) engine.GetEngineRPM();
             currentGear = gearBox.GetCurrentGear();
 
-            if (steeringWheel) UpdateSteering(steering);
-            foreach (EngineSound engineSound in engineSounds) engineSound.UpdateSound(acceleration, engine.GetEngineRPM());
-            if (vehicleMeter) vehicleMeter.UpdateMeter(speed, rpm, currentGear);
+            if (steeringWheel)
+                UpdateSteering(steering);
+
+            foreach (EngineSound engineSound in engineSounds)
+                engineSound.UpdateSound(acceleration, rpm);
+
+            if (vehicleMeter)
+                vehicleMeter.UpdateMeter(speed, rpm, currentGear);
 
             if (brakeMaterial != null && (handbraking > 0 || braking > 0))
                 brakeMaterial.SetFloat("_Emission", 1);
@@ -119,20 +124,13 @@ namespace Ajas.Vehicle
             }
         }
 
-        public void UpdateParameter(float wheelSteering, float acceleration, float pedalBrake, float handBrake)
+        public void UpdateParameter(float wheelSteering, float acceleration, float pedalBrake, float handBrake, float clutch)
         {
             this.steering = wheelSteering;
             this.acceleration = acceleration;
             this.braking = pedalBrake;
             this.handbraking = handBrake;
-/*
-            bool negativeSteering = (this.steering < 0) ? true : false;
-            float steering;
-
-            steering = (Mathf.Lerp(0.1F, 1, (70 - speed) / 70));
-            if (Mathf.Abs(this.steering) > steering)
-                this.steering = (negativeSteering) ? steering * -1 : steering;
-*/
+            this.clutch = clutch;
         }
         public int GetSpeed() { return (int) speed; }
         public int GetEngineRPM() { return rpm; }

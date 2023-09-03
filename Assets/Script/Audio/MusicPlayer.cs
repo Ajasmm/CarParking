@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
@@ -10,8 +8,19 @@ public class MusicPlayer : MonoBehaviour
     
     AudioSource musicSource;
 
+    private static MusicPlayer instance;
+
     private void Awake()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
         musicSource = GetComponent<AudioSource>();
         musicSource.playOnAwake = true;
         musicSource.volume = 0f;

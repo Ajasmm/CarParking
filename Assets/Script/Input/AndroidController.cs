@@ -8,15 +8,10 @@ public class AndroidController : MonoBehaviour
 
     private void OnEnable()
     {
-        Button_Controller.SetActive(false);
-        Wheel_Controller.SetActive(false);
+        // To load data we need to Initialize the GameManager
+        GameManager.Instance.Initialize();
+        DisableAllControlls();
 
-        if (Application.platform != RuntimePlatform.Android)
-        {
-            gameObject.SetActive(false);
-            return;
-        }
-        GameManager.Instance.Access();
         Controls.SteeringControlMode controlMode;
         controlMode = (Controls.SteeringControlMode)PlayerPrefs.GetInt(Controls.CONTROLLER_MODE);
 
@@ -30,5 +25,15 @@ public class AndroidController : MonoBehaviour
                 break;
         }
 
+        if (Application.platform != RuntimePlatform.Android)
+        {
+            DisableAllControlls();
+        }
+    }
+
+    private void DisableAllControlls()
+    {
+        Button_Controller.SetActive(false);
+        Wheel_Controller.SetActive(false);
     }
 }
