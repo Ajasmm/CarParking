@@ -2,3 +2,4 @@
 * text=auto
 One.unity filter=lfs diff=lfs merge=lfs -text
 Assets/Scenes/Level filter=lfs diff=lfs merge=lfs -text
+Assets/Scenes/Level[[:space:]]One.unity filter=lfs diff=lfs merge=lfs -text
