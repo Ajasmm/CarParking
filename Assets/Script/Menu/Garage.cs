@@ -56,19 +56,34 @@ public class Garage : MonoBehaviour
     }
     private void OnNext()
     {
+        if (GameManager.Instance.IsLoadingPlayer())
+            return;
+
         currentVehicleIndex++;
         if (currentVehicleIndex >= vehicleNames.Count)
             currentVehicleIndex = 0;
 
-        GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]);
+        if (GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]))
+            StartCoroutine(DisableButoonUntilPlayerLoads(next));
     }
     private void OnPrev()
     {
+        if(GameManager.Instance.IsLoadingPlayer())
+            return;
+
         currentVehicleIndex--;
         if (currentVehicleIndex < 0)
             currentVehicleIndex = vehicleNames.Count - 1;
 
-        GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]);
+        if(GameManager.Instance.UpdatePlayer(vehicleNames[currentVehicleIndex]))
+            StartCoroutine(DisableButoonUntilPlayerLoads(prev));    
+    }
+    IEnumerator DisableButoonUntilPlayerLoads(Button button)
+    {
+        button.interactable = false;
+        yield return GameManager.Instance.WaitForPlayerEnumerator();
+
+        button.interactable = true;
     }
     private void OnEscape(InputAction.CallbackContext context)
     {

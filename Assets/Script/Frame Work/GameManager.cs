@@ -151,26 +151,42 @@ namespace Ajas.FrameWork
             PlayerPrefs.Save();
         }
 
-        public void UpdatePlayer(string vehicleName)
+        public bool IsLoadingPlayer()
         {
+            if (playerLoading_Coroutine == null)
+                return false;
+            else
+                return true;
+        }
+        public bool UpdatePlayer(string vehicleName)
+        {
+            if (IsLoadingPlayer())
+                return false;
+
             playerData.vehicleName = vehicleName;
-            UpdatePlayer();
+            return UpdatePlayer();
         }
-        public void UpdatePlayer()
+        public bool UpdatePlayer()
         {
-            if (player != null)
-            {
-                player.SetActive(false);
-                Destroy(player);
-                player = null;
-            }
-            LoadPlayer();
+            return LoadPlayer();
         }
-        private void LoadPlayer()
+        private bool LoadPlayer()
         {
-            if (player != null || playerLoading_Coroutine != null)
-                return;
+            DestroyPlayer();
+
+            if (playerLoading_Coroutine != null)
+                return false;
+
             playerLoading_Coroutine = StartCoroutine(LoadPlayerFromFile());
+            return true;    
+        }
+        private void DestroyPlayer()
+        {
+            if (player == null)
+                return;
+
+            Destroy(player);
+            player = null;
         }
 
         private IEnumerator LoadPlayerFromFile()
