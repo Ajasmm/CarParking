@@ -16,6 +16,9 @@ public class Driver_Player : MonoBehaviour
     [Header("Cameras")]
     [SerializeField] CinemachineVirtualCamera[] cameras;
 
+    [Header("Meter Data")]
+    [SerializeField] MeterData meterData;
+
     int currentCamera = 0;
 
     float rawSteeringInput, rawAccelrationInput, rawBrakeInput, rawHandbrakeInput;
@@ -103,6 +106,10 @@ public class Driver_Player : MonoBehaviour
         vehicle.UpdateParameter(steering, acceleration, braking, rawHandbrakeInput, clutch);
 
         AutoGearChange();
+
+        meterData.gear = vehicle.GetCurrentGear();
+        meterData.speed = vehicle.GetSpeed();
+        meterData.rpm = vehicle.GetEngineRPM();
     }
     private void AutoGearChange()
     {

@@ -43,7 +43,10 @@ namespace Ajas.FrameWork
                 if (currentLevel > MaxLevel)
                     currentLevel = 0;
                 if (currentLevel > playerData.highestLevelReached)
+                {
                     playerData.highestLevelReached = currentLevel;
+                    WritePlayerData(); 
+                }
             }
         }
         private int currentLevel = 0;

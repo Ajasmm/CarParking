@@ -112,6 +112,7 @@ MonoBehaviour:
   cameras:
   - {fileID: 3981419645102251272}
   - {fileID: 7744270702898945514}
+  meterData: {fileID: 11400000, guid: c985c7cbb6abea84681fb9cf88de00bc, type: 2}
 --- !u!114 &8380671223306152935
 MonoBehaviour:
   m_ObjectHideFlags: 0
